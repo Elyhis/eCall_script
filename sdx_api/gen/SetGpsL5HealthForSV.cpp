@@ -1,0 +1,114 @@
+
+#include "SetGpsL5HealthForSV.h"
+
+#include "command_factory.h"
+#include "parse_json.hpp"
+
+///
+/// Definition of SetGpsL5HealthForSV
+///
+
+namespace Sdx
+{
+  namespace Cmd
+  {
+    const char* const SetGpsL5HealthForSV::CmdName = "SetGpsL5HealthForSV";
+    const char* const SetGpsL5HealthForSV::Documentation = "Set GPS L5 health (used with CNAV and CNAV2)\n"
+      "\n"
+      "Name        Type            Description\n"
+      "----------- --------------- -------------------------------------------------------------------------------------------\n"
+      "SvId        int             Satellite's SV ID 1..32, or use 0 to apply new value to all satellites.\n"
+      "Health      bool            L5 health, false = signal OK, true = signal bad or unavailable\n"
+      "DataSetName optional string Optional name of the data set to use. If no value is provided, the active data set is used.";
+    const char* const SetGpsL5HealthForSV::TargetId = "";
+
+    REGISTER_COMMAND_TO_FACTORY_DECL(SetGpsL5HealthForSV);
+    REGISTER_COMMAND_TO_FACTORY_IMPL(SetGpsL5HealthForSV);
+
+
+    SetGpsL5HealthForSV::SetGpsL5HealthForSV()
+      : CommandBase(CmdName, TargetId)
+    {}
+
+    SetGpsL5HealthForSV::SetGpsL5HealthForSV(int svId, bool health, const std::optional<std::string>& dataSetName)
+      : CommandBase(CmdName, TargetId)
+    {
+
+      setSvId(svId);
+      setHealth(health);
+      setDataSetName(dataSetName);
+    }
+
+    SetGpsL5HealthForSVPtr SetGpsL5HealthForSV::create(int svId, bool health, const std::optional<std::string>& dataSetName)
+    {
+      return std::make_shared<SetGpsL5HealthForSV>(svId, health, dataSetName);
+    }
+
+    SetGpsL5HealthForSVPtr SetGpsL5HealthForSV::dynamicCast(CommandBasePtr ptr)
+    {
+      return std::dynamic_pointer_cast<SetGpsL5HealthForSV>(ptr);
+    }
+
+    bool SetGpsL5HealthForSV::isValid() const
+    {
+      
+        return m_values.IsObject()
+          && parse_json<int>::is_valid(m_values["SvId"])
+          && parse_json<bool>::is_valid(m_values["Health"])
+          && parse_json<std::optional<std::string>>::is_valid(m_values["DataSetName"])
+        ;
+
+    }
+
+    std::string SetGpsL5HealthForSV::documentation() const { return Documentation; }
+
+    const std::vector<std::string>& SetGpsL5HealthForSV::fieldNames() const 
+    { 
+      static const std::vector<std::string> names {"SvId", "Health", "DataSetName"}; 
+      return names; 
+    }
+
+
+    int SetGpsL5HealthForSV::executePermission() const
+    {
+      return EXECUTE_IF_SIMULATING | EXECUTE_IF_IDLE;
+    }
+
+
+    int SetGpsL5HealthForSV::svId() const
+    {
+      return parse_json<int>::parse(m_values["SvId"]);
+    }
+
+    void SetGpsL5HealthForSV::setSvId(int svId)
+    {
+      m_values.AddMember("SvId", parse_json<int>::format(svId, m_values.GetAllocator()), m_values.GetAllocator());
+    }
+
+
+
+    bool SetGpsL5HealthForSV::health() const
+    {
+      return parse_json<bool>::parse(m_values["Health"]);
+    }
+
+    void SetGpsL5HealthForSV::setHealth(bool health)
+    {
+      m_values.AddMember("Health", parse_json<bool>::format(health, m_values.GetAllocator()), m_values.GetAllocator());
+    }
+
+
+
+    std::optional<std::string> SetGpsL5HealthForSV::dataSetName() const
+    {
+      return parse_json<std::optional<std::string>>::parse(m_values["DataSetName"]);
+    }
+
+    void SetGpsL5HealthForSV::setDataSetName(const std::optional<std::string>& dataSetName)
+    {
+      m_values.AddMember("DataSetName", parse_json<std::optional<std::string>>::format(dataSetName, m_values.GetAllocator()), m_values.GetAllocator());
+    }
+
+
+  }
+}
