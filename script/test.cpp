@@ -326,6 +326,9 @@ void eCallTTFF2253(RemoteSimulator& sim, const std::string& targetType, const st
     std::string targetId = "MyOutputId";
 
     setupSim(sim, date);
+    //Need to be at -130dBm must rectify offset of setup
+    sim.call(SetSignalPowerOffset::create("L1CA", 8.5));
+    sim.call(SetSignalPowerOffset::create("E1", 5));
 
     //Setup Vehicule
     setupFixPostion(sim);
