@@ -22,12 +22,12 @@ int main(){
     // change "localhost" for the remote computer's IP address, such as "192.168.1.100"
     const std::string HOST = "localhost";
 
-    //Device type
+    //Device type parameters
     const std::string TARGET_TYPE = "None"; // Change to "X300" to execute on a X300 device
     const std::string DEVICE_IP = "";           // Change to "192.168.XXX.XXX" to execute on a X300 device
-    int duration = 60; // Time in seconde
+    int duration = 3600; // Time in seconde
 
-    //Receiver
+    //Receiver parameters
     const std::string SERIAL_PORT = "COM5";
     const int BAUD_RATE = 38400;
     const SerialPortParity PARITY = SerialPortParity::NoParity;
@@ -47,15 +47,15 @@ int main(){
     sim.connect(HOST);
 
     std::cout << "==> Connecting to the receiver" << std::endl;
-    //sim.call(ConnectSerialPortReceiver::create(SERIAL_PORT,BAUD_RATE,DATA_BITS,PARITY,STOP_BITS,FLOW_CONTROL));
+    sim.call(ConnectSerialPortReceiver::create(SERIAL_PORT,BAUD_RATE,DATA_BITS,PARITY,STOP_BITS,FLOW_CONTROL));
 
     try{
-        eCallDynamics223(sim, TARGET_TYPE, IP, duration);
+        eCallStatic(sim, TARGET_TYPE, DEVICE_IP, duration);
         nmeaData = reader(filePath);
         nmea = parser(nmeaData);
         //Disconnecting
         std::cout << "==> Disconnecting to the receiver" << std::endl;
-        //sim.call(DisconnectSerialPortReceiver::create());
+        sim.call(DisconnectSerialPortReceiver::create());
 
         std::cout << "==> Connecting to the simulator" << std::endl;
         sim.disconnect();
@@ -99,7 +99,6 @@ double standardDeviation(std::vector<double> values, double inaccuracy){
     return sqrt(result/(values.size()-1));
 }
 
-
 // calculate meridian curve following formula 2.2.2.12 (used in formula 4-1 et 4-2)
 double meridianCurve(double phi) {
     double sin_phi = sin(phi);
@@ -135,4 +134,30 @@ double sigmaL_m(double phi, double sigmaL_arcsec) {
 //Formula specified in 2.2.2.14
 double horizontalPosError(double lat, double latInaccuracy, double lonInaccuracy, double sdLat, double sdLon){
     return sqrt(pow(dB_m(lat,latInaccuracy),2)+pow(dL_m(lat,lonInaccuracy),2))+2*sqrt(pow(sigmaB_m(lat,sdLat),2)+pow(sigmaL_m(lat,sdLon),2));
+}
+
+bool staticTest(nmea nmea, Lla originLla){
+    std::vector<double> latitudes;
+    std::vector<double> longitudes;
+    std::vector<double> horizontalPos;
+    int threshold = 15;
+    //Get all latitudes and longitudes recorded
+    for(std::vector<std::string> trame : nmea.gga){
+        double lat = std::stod(trame[2]);
+        double lon = std::stod(trame[4]);
+        latitudes.push_back(lat);
+        longitudes.push_back(lon);
+        //Calculate inaccuracy following JO formula
+        double inaccuracyLat = systematicInaccuracy(latitudes, originLla.lat);
+        double inaccuracyLon = systematicInaccuracy(longitudes, originLla.lon);
+        double sdLat = standardDeviation(latitudes,inaccuracyLat);
+        double sdLon = standardDeviation(longitudes,inaccuracyLon);
+        horizontalPos.push_back(horizontalPosError(lat,inaccuracyLat,inaccuracyLon,sdLat,sdLon));
+    }
+    //Checking if receiver pass the test or not
+    bool isLessThan15Meters = true;
+    for(double value : horizontalPos){
+        if (value > threshold) isLessThan15Meters = false;
+    }
+    return isLessThan15Meters;
 }
