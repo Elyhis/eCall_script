@@ -43,7 +43,6 @@ void setupSim(RemoteSimulator& sim, DateTime& date){
     sim.call(SetGlobalPowerOffset::create(-20));
     sim.call(SetSignalPowerOffset::create("L1CA", -8.5));
     sim.call(SetSignalPowerOffset::create("E1", -5));
-
 }
 
 void setupTrackFromCSV(RemoteSimulator& sim, std::string path){
@@ -193,7 +192,7 @@ void eCallDynamics224(RemoteSimulator& sim, const std::string& targetType, const
     // Start simulation
     std::cout << "==> Starting the simulation" << std::endl;
     sim.start();
-    
+
     //Specific interval to shutdown signal
     const double intervalUpInSec = 300.0;
     const double intervalDownInSec = 600.0;
@@ -315,10 +314,11 @@ void eCallStaticGps(RemoteSimulator& sim, const std::string& targetType, const s
 }
 
 //Test eCallTTFF2253 (2.2.5.3)
-//TODO: Use Serial Port to read NMEA message // Read NMEA file while being written by Skydel
+//TODO:
+// Find a way to have fixed position real time with receiver -> Answer : Need to know how to receive receiver data and treat them on my own
+// Must check trame GGA to 6 pos and verify to be != 0
 void eCallTTFF2253(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration){
-    std::cout << "=== eCallStaticGPS test ===" << std::endl;
-    
+    std::cout << "=== eCallTTFF2253 test ===" << std::endl;
 
     // Basic setup for the simulation
     // Variable specific to simulation
@@ -355,6 +355,6 @@ void eCallTTFF2253(RemoteSimulator& sim, const std::string& targetType, const st
 
 //Test eCallTTFF2258 (2.2.5.8)
 //TODO: all test to do
-// Find a way to have fixed position real time with receiver
+// Find a way to have fixed position real time with receiver -> Answer : Need to know how to receive receiver data and treat them on my own
 // Must check trame GGA to 6 pos and verify to be != 0
 void eCallTTFF2258(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration){}
