@@ -165,3 +165,12 @@ bool isHorizontalErrorLessThan15(std::vector<double> horizontalPos){
     }
     return isLessThan15Meters;
 }
+//2.2.1 test to check if there is a message with value 2 at 6th position
+bool isField6Correct(std::vector<std::vector<std::string>> ggaMessage){
+    int i = 0;
+    while(ggaMessage[i][6].compare("2") && i < ggaMessage.size()){
+        if(ggaMessage[i][6].compare("2")) return true;
+        i++;
+    }
+    return false;
+}
