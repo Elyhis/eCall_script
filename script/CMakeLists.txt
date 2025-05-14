@@ -1,7 +1,6 @@
 add_executable(transcription
     main.cpp
     nmea.cpp
-    test.cpp
 )
 
 target_include_directories(transcription PRIVATE
