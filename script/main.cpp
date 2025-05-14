@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "nmea.h"
-#include "test.cpp"
+#include "scenario.cpp"
 
 #include "lla.h"
 #include "command_exception.h"
