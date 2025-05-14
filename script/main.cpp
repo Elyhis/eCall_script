@@ -136,11 +136,10 @@ double horizontalPosError(double lat, double latInaccuracy, double lonInaccuracy
     return sqrt(pow(dB_m(lat,latInaccuracy),2)+pow(dL_m(lat,lonInaccuracy),2))+2*sqrt(pow(sigmaB_m(lat,sdLat),2)+pow(sigmaL_m(lat,sdLon),2));
 }
 
-bool staticTest(nmea nmea, Lla originLla){
+std::vector<double> calculhorizontalPosError(nmea nmea, Lla originLla){
     std::vector<double> latitudes;
     std::vector<double> longitudes;
     std::vector<double> horizontalPos;
-    int threshold = 15;
     //Get all latitudes and longitudes recorded
     for(std::vector<std::string> trame : nmea.gga){
         double lat = std::stod(trame[2]);
@@ -154,6 +153,11 @@ bool staticTest(nmea nmea, Lla originLla){
         double sdLon = standardDeviation(longitudes,inaccuracyLon);
         horizontalPos.push_back(horizontalPosError(lat,inaccuracyLat,inaccuracyLon,sdLat,sdLon));
     }
+    return horizontalPos;
+}
+
+bool isHorizontalErrorLessThan15(std::vector<double> horizontalPos){
+    int threshold = 15;
     //Checking if receiver pass the test or not
     bool isLessThan15Meters = true;
     for(double value : horizontalPos){
