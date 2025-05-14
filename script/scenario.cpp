@@ -360,4 +360,41 @@ void eCallTTFF2253(RemoteSimulator& sim, const std::string& targetType, const st
 //TODO: all test to do
 // Find a way to have fixed position real time with receiver -> Answer : Need to know how to receive receiver data and treat them on my own
 // Must check trame GGA to 6 pos and verify to be != 0
-void eCallTTFF2258(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration){}
+void eCallTTFF2258(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration){
+    std::cout << "=== eCallTTFF2258 test ===" << std::endl;
+
+    // Basic setup for the simulation
+    // Variable specific to simulation
+    DateTime date = DateTime(2017, 10, 4, 10, 0, 0);
+    std::string targetId = "MyOutputId";
+
+    setupSim(sim, date);
+    //Need to be at -140dBm must rectify offset of setup
+    sim.call(SetSignalPowerOffset::create("L1CA", -1.5));
+    sim.call(SetSignalPowerOffset::create("E1", -5));
+
+    //Setup Vehicule
+    setupFixPostion(sim);
+    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
+
+    // Change constellation parameters
+    setupGPS(sim,false);
+    setupGalileo(sim,false);
+
+    // Signals
+    sim.call(SetModulationTarget::create(targetType, "", "", true, targetId));
+    sim.call(ChangeModulationTargetSignals::create(0, 12500000, 100000000, "UpperL", "L1CA,E1", -1, false, targetId));
+
+    // Start simulation
+    for(int i = 0; i < nbIteration; i++){
+        do{   
+            std::cout << "==> Starting the simulation" << std::endl;
+            sim.start();
+            // End simulation after specific duration
+            std::cout << "==> Stop simulation when elapsed duration is " << duration << "..." << std::endl;
+            sim.stop(duration);
+            std::cout << "==> Disconnect from Simulator" << std::endl;
+    
+        }while(true); // TODO: Must check trame GGA to 6 pos and verify to be != 0
+    }
+}
