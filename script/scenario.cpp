@@ -327,8 +327,8 @@ void eCallTTFF2253(RemoteSimulator& sim, const std::string& targetType, const st
 
     setupSim(sim, date);
     //Need to be at -130dBm must rectify offset of setup
-    sim.call(SetSignalPowerOffset::create("L1CA", 8.5));
-    sim.call(SetSignalPowerOffset::create("E1", 5));
+    sim.call(SetSignalPowerOffset::create("L1CA", 0));
+    sim.call(SetSignalPowerOffset::create("E1", 0));
 
     //Setup Vehicule
     setupFixPostion(sim);
@@ -343,17 +343,17 @@ void eCallTTFF2253(RemoteSimulator& sim, const std::string& targetType, const st
     sim.call(ChangeModulationTargetSignals::create(0, 12500000, 100000000, "UpperL", "L1CA,E1", -1, false, targetId));
 
     // Start simulation
-    for(int i = 0; i < nbIteration; i++){
-        do{   
-            std::cout << "==> Starting the simulation" << std::endl;
-            sim.start();
-            // End simulation after specific duration
-            std::cout << "==> Stop simulation when elapsed duration is " << duration << "..." << std::endl;
-            sim.stop(duration);
-            std::cout << "==> Disconnect from Simulator" << std::endl;
+    // for(int i = 0; i < nbIteration; i++){
+    //     do{   
+    //         std::cout << "==> Starting the simulation" << std::endl;
+    //         sim.start();
+    //         // End simulation after specific duration
+    //         std::cout << "==> Stop simulation when elapsed duration is " << duration << "..." << std::endl;
+    //         sim.stop(duration);
+    //         std::cout << "==> Disconnect from Simulator" << std::endl;
     
-        }while(true); // TODO: Must check trame GGA to 6 pos and verify to be != 0
-    }
+    //     }while(true); // TODO: Must check trame GGA to 6 pos and verify to be != 0
+    // }
 }
 
 //Test eCallTTFF2258 (2.2.5.8)
@@ -370,8 +370,9 @@ void eCallTTFF2258(RemoteSimulator& sim, const std::string& targetType, const st
 
     setupSim(sim, date);
     //Need to be at -140dBm must rectify offset of setup
-    sim.call(SetSignalPowerOffset::create("L1CA", -1.5));
-    sim.call(SetSignalPowerOffset::create("E1", -5));
+    sim.call(SetSignalPowerOffset::create("L1CA", 0));
+    sim.call(SetSignalPowerOffset::create("E1", 0));
+    sim.call(SetGlobalPowerOffset::create(-30));
 
     //Setup Vehicule
     setupFixPostion(sim);
