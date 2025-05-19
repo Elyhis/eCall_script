@@ -2,6 +2,9 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <tuple>
+
+#include <fstream>
 
 #include "nmea.h"
 #include "scenario.cpp"
@@ -25,11 +28,47 @@ bool isHorizontalErrorLessThan15(std::vector<double> horizontalPos){
 //2.2.1 test to check if there is a message with value 2 at 6th position
 bool isField6Correct(std::vector<std::vector<std::string>> ggaMessage){
     int i = 0;
-    while(ggaMessage[i][6].compare("2") && i < ggaMessage.size()){
-        if(ggaMessage[i][6].compare("2")) return true;
+    while(i < ggaMessage.size() && ggaMessage[i][6] != "2"){
         i++;
     }
+    if(i < ggaMessage.size()){
+        std::cout << "\" "  << std::endl;
+        for(auto i : ggaMessage[i]){
+            std::cout << i << ", ";
+        }
+        std::cout << " \""  << std::endl;
+        return true;
+    }
     return false;
+}
+
+
+//FIXME: TEMP TO MAKE A GRAPH, WILL BE IN A UI COMPONENT
+void graph(nmea nmea, std::vector<double> horizontalPos){
+    std::vector<std::string> time;
+    std::string filePath = "graph.csv";
+    // file pointer
+    std::fstream fout;
+    
+    // opens an existing csv file or creates a new file.
+    fout.open(filePath, std::fstream::out);
+    fout << "Time(UTC),Position error (m)\n";
+    int delta =nmea.rmc.size() - horizontalPos.size();
+    delta = abs(delta);
+    for(int i = 0; i < nmea.rmc.size();i++){
+        if(nmea.rmc[i][2] != "V"){
+            std::string temp = nmea.rmc[i][1];
+            std::string hours = temp.substr(0, 2);  // Get the first two characters for hours
+            std::string mins = temp.substr(2, 2);   // Get the next two characters for minutes
+            std::string sec = temp.substr(4, 2);   // Get the last two characters for seconds
+            std::string t = hours + ":" + mins + ":" + sec ;
+            time.push_back(t);
+        }
+    }
+    for(int i = 0; i < time.size();i++){
+        fout << time[i] << "," << horizontalPos[i] << std::endl;
+    }
+    fout.close();
 }
 
 int main(){
@@ -38,8 +77,8 @@ int main(){
     const std::string HOST = "localhost";
 
     //Device type parameters
-    const std::string TARGET_TYPE = "None"; // Change to "X300" to execute on a X300 device
-    const std::string DEVICE_IP = "";           // Change to "192.168.XXX.XXX" to execute on a X300 device
+    const std::string TARGET_TYPE = "None"; // Change to "DTA-2116" to execute on a DTA-2116 device
+    const std::string DEVICE_IP = "";           // Change to "192.168.XXX.XXX" to execute on a TARGET_TYPE device
     int duration = 3600; // Time in seconde
 
     //Receiver parameters
@@ -66,24 +105,30 @@ int main(){
     Lla lla = Lla(latR, lonR, alt);
 
     // std::cout << "==> Connecting to the simulator" << std::endl;
-    // RemoteSimulator sim;
-    // sim.setVerbose(true);
-    // sim.connect(HOST);
+    RemoteSimulator sim;
+    sim.setVerbose(true);
+    sim.connect(HOST);
 
     // std::cout << "==> Connecting to the receiver" << std::endl;
     //sim.call(ConnectSerialPortReceiver::create(SERIAL_PORT,BAUD_RATE,DATA_BITS,PARITY,STOP_BITS,FLOW_CONTROL));
 
     try{
-        //eCallStatic(sim, TARGET_TYPE, DEVICE_IP, duration);
-        std::cout << "Testing parser" << std::endl;
-
+        // eCallStatic(sim, TARGET_TYPE, DEVICE_IP, duration);
+        // std::cout << "Testing parser" << std::endl;
+        // eCallStatic(sim,TARGET_TYPE,DEVICE_IP,duration);
         nmeaData = reader(filePath);
         nmea = parser(nmeaData);
-        auto calculhorizontalPos = calculhorizontalPosError(nmea,lla);
-        auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
+        // auto pdops = pdopGetter(nmea);
+        // bool isPDOPOk = pdopAnalyzer(pdops);
+        auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, lla);
+
+        // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
+        // auto isField6OK = isField6Correct(nmea.gga);
         //Disconnecting
         // std::cout << "==> Disconnecting to the receiver" << std::endl;
         // sim.call(DisconnectSerialPortReceiver::create());
+        std::cout << "Mean value: " << mean << std::endl;
+        graph(nmea, horizontalPos);
 
         // std::cout << "==> Connecting to the simulator" << std::endl;
         // sim.disconnect();
