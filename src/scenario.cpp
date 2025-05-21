@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -12,12 +11,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#define RADIAN(degree) degree / 180.0 * M_PI
-
-#include "all_commands.h"
-#include "remote_simulator.h"
 #include "lla.h"
-#include "attitude.h"
+#include "scenario.h"
 
 using namespace Sdx;
 using namespace Sdx::Cmd;
@@ -43,7 +38,6 @@ void setupSim(RemoteSimulator& sim, DateTime& date){
     sim.call(SetGlobalPowerOffset::create(-20));
     sim.call(SetSignalPowerOffset::create("L1CA", -8.5));
     sim.call(SetSignalPowerOffset::create("E1", -5));
-
 }
 
 void setupTrackFromCSV(RemoteSimulator& sim, std::string path){
@@ -193,7 +187,7 @@ void eCallDynamics224(RemoteSimulator& sim, const std::string& targetType, const
     // Start simulation
     std::cout << "==> Starting the simulation" << std::endl;
     sim.start();
-    
+
     //Specific interval to shutdown signal
     const double intervalUpInSec = 300.0;
     const double intervalDownInSec = 600.0;
@@ -315,10 +309,11 @@ void eCallStaticGps(RemoteSimulator& sim, const std::string& targetType, const s
 }
 
 //Test eCallTTFF2253 (2.2.5.3)
-//TODO: Use Serial Port to read NMEA message // Read NMEA file while being written by Skydel
+//TODO:
+// Find a way to have fixed position real time with receiver -> Answer : Need to know how to receive receiver data and treat them on my own
+// Must check trame GGA to 6 pos and verify to be != 0
 void eCallTTFF2253(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration){
-    std::cout << "=== eCallStaticGPS test ===" << std::endl;
-    
+    std::cout << "=== eCallTTFF2253 test ===" << std::endl;
 
     // Basic setup for the simulation
     // Variable specific to simulation
@@ -326,6 +321,53 @@ void eCallTTFF2253(RemoteSimulator& sim, const std::string& targetType, const st
     std::string targetId = "MyOutputId";
 
     setupSim(sim, date);
+    //Need to be at -130dBm must rectify offset of setup
+    sim.call(SetSignalPowerOffset::create("L1CA", 0));
+    sim.call(SetSignalPowerOffset::create("E1", 0));
+
+    //Setup Vehicule
+    setupFixPostion(sim);
+    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
+
+    // Change constellation parameters
+    setupGPS(sim,false);
+    setupGalileo(sim,false);
+
+    // Signals
+    sim.call(SetModulationTarget::create(targetType, "", "", true, targetId));
+    sim.call(ChangeModulationTargetSignals::create(0, 12500000, 100000000, "UpperL", "L1CA,E1", -1, false, targetId));
+
+    // Start simulation
+    // for(int i = 0; i < nbIteration; i++){
+    //     do{   
+    //         std::cout << "==> Starting the simulation" << std::endl;
+    //         sim.start();
+    //         // End simulation after specific duration
+    //         std::cout << "==> Stop simulation when elapsed duration is " << duration << "..." << std::endl;
+    //         sim.stop(duration);
+    //         std::cout << "==> Disconnect from Simulator" << std::endl;
+    
+    //     }while(true); // TODO: Must check trame GGA to 6 pos and verify to be != 0
+    // }
+}
+
+//Test eCallTTFF2258 (2.2.5.8)
+//TODO: all test to do
+// Find a way to have fixed position real time with receiver -> Answer : Need to know how to receive receiver data and treat them on my own
+// Must check trame GGA to 6 pos and verify to be != 0
+void eCallTTFF2258(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration){
+    std::cout << "=== eCallTTFF2258 test ===" << std::endl;
+
+    // Basic setup for the simulation
+    // Variable specific to simulation
+    DateTime date = DateTime(2017, 10, 4, 10, 0, 0);
+    std::string targetId = "MyOutputId";
+
+    setupSim(sim, date);
+    //Need to be at -140dBm must rectify offset of setup
+    sim.call(SetSignalPowerOffset::create("L1CA", 0));
+    sim.call(SetSignalPowerOffset::create("E1", 0));
+    sim.call(SetGlobalPowerOffset::create(-30));
 
     //Setup Vehicule
     setupFixPostion(sim);
@@ -352,9 +394,3 @@ void eCallTTFF2253(RemoteSimulator& sim, const std::string& targetType, const st
         }while(true); // TODO: Must check trame GGA to 6 pos and verify to be != 0
     }
 }
-
-//Test eCallTTFF2258 (2.2.5.8)
-//TODO: all test to do
-// Find a way to have fixed position real time with receiver
-// Must check trame GGA to 6 pos and verify to be != 0
-void eCallTTFF2258(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration){}
