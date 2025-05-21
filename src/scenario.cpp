@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -12,12 +11,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#define RADIAN(degree) degree / 180.0 * M_PI
-
-#include "all_commands.h"
-#include "remote_simulator.h"
 #include "lla.h"
-#include "attitude.h"
+#include "scenario.h"
 
 using namespace Sdx;
 using namespace Sdx::Cmd;

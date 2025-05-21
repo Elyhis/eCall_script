@@ -7,8 +7,8 @@
 #include <fstream>
 
 #include "nmea.h"
-#include "scenario.cpp"
-#include "mathFormulaJO.cpp"
+#include "scenario.h"
+#include "mathFormulaJO.h"
 
 #include "lla.h"
 #include "command_exception.h"
