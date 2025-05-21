@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <tuple>
+#include <QApplication>
 
 #include <fstream>
 
@@ -13,6 +14,8 @@
 #include "lla.h"
 #include "command_exception.h"
 #include "date_time.h"
+
+#include "mainwindow.h"
 
 using namespace Sdx;
 
@@ -71,74 +74,78 @@ void graph(nmea nmea, std::vector<double> horizontalPos){
     fout.close();
 }
 
-int main(){
-    // If you wish to connect to the simulator running on a remote computer,
-    // change "localhost" for the remote computer's IP address, such as "192.168.1.100"
-    const std::string HOST = "localhost";
+int main(int argc, char *argv[]){
+    // // If you wish to connect to the simulator running on a remote computer,
+    // // change "localhost" for the remote computer's IP address, such as "192.168.1.100"
+    // const std::string HOST = "localhost";
 
-    //Device type parameters
-    const std::string TARGET_TYPE = "None"; // Change to "DTA-2116" to execute on a DTA-2116 device
-    const std::string DEVICE_IP = "";           // Change to "192.168.XXX.XXX" to execute on a TARGET_TYPE device
-    int duration = 3600; // Time in seconde
+    // //Device type parameters
+    // const std::string TARGET_TYPE = "None"; // Change to "DTA-2116" to execute on a DTA-2116 device
+    // const std::string DEVICE_IP = "";           // Change to "192.168.XXX.XXX" to execute on a TARGET_TYPE device
+    // int duration = 3600; // Time in seconde
 
-    //Receiver parameters
-    const std::string SERIAL_PORT = "COM5";
-    const int BAUD_RATE = 38400;
-    const SerialPortParity PARITY = SerialPortParity::NoParity;
-    const int DATA_BITS = 8;
-    const int STOP_BITS = 1;
-    const SerialPortFlowControl FLOW_CONTROL = SerialPortFlowControl::NoFlowControl;
+    // //Receiver parameters
+    // const std::string SERIAL_PORT = "COM5";
+    // const int BAUD_RATE = 38400;
+    // const SerialPortParity PARITY = SerialPortParity::NoParity;
+    // const int DATA_BITS = 8;
+    // const int STOP_BITS = 1;
+    // const SerialPortFlowControl FLOW_CONTROL = SerialPortFlowControl::NoFlowControl;
 
-    //Path to nmea output data
-    //TODO: use GUI to take Skydel NMEA output
-    std::string filePath = "C:/Users/Bryan.Barbe/Downloads/250514_090632_2.2.2_gps_gal_sbas_rcv.nmea";
-    std::vector<std::string> nmeaData;
-    nmea nmea;
+    // //Path to nmea output data
+    // //TODO: use GUI to take Skydel NMEA output
+    // std::string filePath = "C:/Users/Bryan.Barbe/Downloads/250514_090632_2.2.2_gps_gal_sbas_rcv.nmea";
+    // std::vector<std::string> nmeaData;
+    // nmea nmea;
 
-    //FIXME: TEMP VALUE
-    double latD = 42.2677;
-    double latR = latD * M_PI / 180;
-    double lonD = 354.6699 - 360;
-    double lonR = lonD * M_PI / 180;
-    double alt = 830;
+    // //FIXME: TEMP VALUE
+    // double latD = 42.2677;
+    // double latR = latD * M_PI / 180;
+    // double lonD = 354.6699 - 360;
+    // double lonR = lonD * M_PI / 180;
+    // double alt = 830;
 
-    Lla lla = Lla(latR, lonR, alt);
+    // Lla lla = Lla(latR, lonR, alt);
 
-    // std::cout << "==> Connecting to the simulator" << std::endl;
-    RemoteSimulator sim;
-    sim.setVerbose(true);
-    sim.connect(HOST);
+    // // std::cout << "==> Connecting to the simulator" << std::endl;
+    // RemoteSimulator sim;
+    // sim.setVerbose(true);
+    // sim.connect(HOST);
 
-    // std::cout << "==> Connecting to the receiver" << std::endl;
-    //sim.call(ConnectSerialPortReceiver::create(SERIAL_PORT,BAUD_RATE,DATA_BITS,PARITY,STOP_BITS,FLOW_CONTROL));
+    // // std::cout << "==> Connecting to the receiver" << std::endl;
+    // //sim.call(ConnectSerialPortReceiver::create(SERIAL_PORT,BAUD_RATE,DATA_BITS,PARITY,STOP_BITS,FLOW_CONTROL));
 
-    try{
-        // eCallStatic(sim, TARGET_TYPE, DEVICE_IP, duration);
-        // std::cout << "Testing parser" << std::endl;
-        // eCallStatic(sim,TARGET_TYPE,DEVICE_IP,duration);
-        nmeaData = reader(filePath);
-        nmea = parser(nmeaData);
-        // auto pdops = pdopGetter(nmea);
-        // bool isPDOPOk = pdopAnalyzer(pdops);
-        auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, lla);
+    // try{
+    //     // eCallStatic(sim, TARGET_TYPE, DEVICE_IP, duration);
+    //     // std::cout << "Testing parser" << std::endl;
+    //     // eCallStatic(sim,TARGET_TYPE,DEVICE_IP,duration);
+    //     nmeaData = reader(filePath);
+    //     nmea = parser(nmeaData);
+    //     // auto pdops = pdopGetter(nmea);
+    //     // bool isPDOPOk = pdopAnalyzer(pdops);
+    //     auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, lla);
 
-        // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
-        // auto isField6OK = isField6Correct(nmea.gga);
-        //Disconnecting
-        // std::cout << "==> Disconnecting to the receiver" << std::endl;
-        // sim.call(DisconnectSerialPortReceiver::create());
-        std::cout << "Mean value: " << mean << std::endl;
-        graph(nmea, horizontalPos);
+    //     // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
+    //     // auto isField6OK = isField6Correct(nmea.gga);
+    //     //Disconnecting
+    //     // std::cout << "==> Disconnecting to the receiver" << std::endl;
+    //     // sim.call(DisconnectSerialPortReceiver::create());
+    //     std::cout << "Mean value: " << mean << std::endl;
+    //     graph(nmea, horizontalPos);
 
-        // std::cout << "==> Connecting to the simulator" << std::endl;
-        // sim.disconnect();
-    }catch (CommandException& e)
-    {
-    std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
-    }
-    catch (std::runtime_error& e)
-    {
-        std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
-    }
-    return 0;
+    //     // std::cout << "==> Connecting to the simulator" << std::endl;
+    //     // sim.disconnect();
+    // }catch (CommandException& e)
+    // {
+    // std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
+    // }
+    // catch (std::runtime_error& e)
+    // {
+    //     std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
+    // }
+    // return 0;
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
+    return a.exec();
 }
