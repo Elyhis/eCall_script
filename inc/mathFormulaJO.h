@@ -9,10 +9,6 @@
 #include "nmea.h"
 #include "lla.h"
 
-const double SEMI_MAJOR_AXIS = 6378137.0;
-const double EXCENTRICITY = 0.0818191908426;
-const double ARCSEC_TO_RAD = (M_PI)/(180*3600);
-
 
 //Simple delta formula
 double delta(double value, double trueValue);
