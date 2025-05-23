@@ -21,7 +21,7 @@ using namespace Sdx::Cmd;
 void setupSim(RemoteSimulator& sim, DateTime& date){
     //  Create new config
     std::cout << "==> Create New Configuration, discarding current simulator settings" << std::endl;
-    sim.call(New::create(true));
+    sim.call(Open::create(std::filesystem::absolute("../../eCallData/eCall.sdx").string(),true));
 
     // Set default value
     sim.call(SetTropoModel::create("Saastamoinen"));
@@ -67,9 +67,9 @@ void setupTrackFromCSV(RemoteSimulator& sim, std::string path){
 void setupGalileo(RemoteSimulator& sim, bool shouldLoad224){
     //Import satellite constellation
     if(shouldLoad224){
-        sim.call(ImportConstellationParameters::create("Galileo", std::filesystem::absolute("../../../eCallData/navigationData/ecall224_GALILEO.txt").string()));
+        sim.call(ImportConstellationParameters::create("Galileo", std::filesystem::absolute("../../eCallData/navigationData/ecall224_GALILEO.txt").string()));
     } else{
-        sim.call(ImportConstellationParameters::create("Galileo", std::filesystem::absolute("../../../eCallData/navigationData/ecall223_GALILEO.txt").string()));
+        sim.call(ImportConstellationParameters::create("Galileo", std::filesystem::absolute("../../eCallData/navigationData/ecall223_GALILEO.txt").string()));
     }
 
     // Setup Galileo
@@ -85,9 +85,9 @@ void setupGalileo(RemoteSimulator& sim, bool shouldLoad224){
 void setupGPS(RemoteSimulator& sim, bool shouldLoad224){
     //Import satellite constellation
     if(shouldLoad224){
-        sim.call(ImportConstellationParameters::create("GPS", std::filesystem::absolute("../../../eCallData/navigationData/ecall224_GPS.txt").string()));
+        sim.call(ImportConstellationParameters::create("GPS", std::filesystem::absolute("../../eCallData/navigationData/ecall224_GPS.txt").string()));
     }else{
-        sim.call(ImportConstellationParameters::create("GPS", std::filesystem::absolute("../../../eCallData/navigationData/ecall223_GPS.txt").string()));
+        sim.call(ImportConstellationParameters::create("GPS", std::filesystem::absolute("../../eCallData/navigationData/ecall223_GPS.txt").string()));
     }
       
     // Setup GPS
@@ -133,8 +133,8 @@ void eCallDynamics223(RemoteSimulator& sim , const std::string& targetType, cons
 
     //Setup Vehicule
     sim.call(SetVehicleTrajectory::create("Track"));
-    setupTrackFromCSV(sim, std::filesystem::absolute("../../../eCallData/trajectories/carEllipse.csv").string());
-    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
+    setupTrackFromCSV(sim, std::filesystem::absolute("../../eCallData/trajectories/carEllipse.csv").string());
+    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
     
    // Setup specific satellite
     setupGPS(sim,false);
@@ -168,9 +168,9 @@ void eCallDynamics224(RemoteSimulator& sim, const std::string& targetType, const
     setupSim(sim, date);
 
     //Setup Vehicule
-    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../../eCallData/antennaModels/eCall-L1.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
+    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../eCallData/antennaModels/eCall-L1.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
     sim.call(SetVehicleTrajectory::create("Track"));
-    setupTrackFromCSV(sim, std::filesystem::absolute("../../../eCallData/trajectories/carEllipse.csv").string());
+    setupTrackFromCSV(sim, std::filesystem::absolute("../../eCallData/trajectories/carEllipse.csv").string());
 
     // Change constellation parameters
     setupGPS(sim,true);
@@ -225,7 +225,7 @@ void eCallStatic(RemoteSimulator& sim, const std::string& targetType, const std:
 
     //Setup Vehicule
     setupFixPostion(sim);
-    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
+    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
     
     // Change constellation parameters
     setupGPS(sim,false);
@@ -258,7 +258,7 @@ void eCallStaticGal(RemoteSimulator& sim, const std::string& targetType, const s
     
     //Setup Vehicule
     setupFixPostion(sim);
-    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
+    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
     
     // Change constellation parameters
     setupGalileo(sim,false);
@@ -290,7 +290,7 @@ void eCallStaticGps(RemoteSimulator& sim, const std::string& targetType, const s
 
     //Setup Vehicule
     setupFixPostion(sim);
-    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
+    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
     
     // Change constellation parameters
     setupGPS(sim,false);
@@ -327,7 +327,7 @@ void eCallTTFF2253(RemoteSimulator& sim, const std::string& targetType, const st
 
     //Setup Vehicule
     setupFixPostion(sim);
-    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
+    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
 
     // Change constellation parameters
     setupGPS(sim,false);
@@ -371,7 +371,7 @@ void eCallTTFF2258(RemoteSimulator& sim, const std::string& targetType, const st
 
     //Setup Vehicule
     setupFixPostion(sim);
-    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
+    sim.call(SetVehicleAntennaGainCSV::create(std::filesystem::absolute("../../eCallData/antennaModels/Zero-Antenna.csv").string(), AntennaPatternType::Custom, GNSSBand::L1));
 
     // Change constellation parameters
     setupGPS(sim,false);
