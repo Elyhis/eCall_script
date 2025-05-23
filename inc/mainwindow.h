@@ -3,11 +3,17 @@
 
 #include <QMainWindow>
 
+#include "nmea.h"
+#include <vector>
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
 }
 QT_END_NAMESPACE
+
+
+//void graph(nmea nmea, std::vector<double> horizontalPos);
 
 class MainWindow : public QMainWindow
 {
