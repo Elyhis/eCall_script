@@ -3,9 +3,6 @@
 
 #include <vector>
 
-#define _USE_MATH_DEFINES
-#include <math.h>
-
 #include "nmea.h"
 #include "lla.h"
 
