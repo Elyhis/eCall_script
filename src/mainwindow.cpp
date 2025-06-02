@@ -191,9 +191,33 @@ void MainWindow::on_start_clicked()
             std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
         }
     }
-    if(ui->Dynamic223->isChecked()){
+    if(ui->dynamic223->isChecked()){
         try{
             eCallDynamics223Scenario(sim, TARGET_TYPE, DEVICE_IP, duration);
+            nmeaData = reader(filePath);
+            nmea = parser(nmeaData);
+            // auto pdops = pdopGetter(nmea);
+            // bool isPDOPOk = pdopAnalyzer(pdops);
+            auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, lla);
+
+            // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
+            // auto isField6OK = isField6Correct(nmea.gga);
+            std::cout << "Mean value: " << mean << std::endl;
+            //graph(nmea, horizontalPos);
+
+            
+        }catch (CommandException& e)
+        {
+        std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
+        }
+        catch (std::runtime_error& e)
+        {
+            std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
+        }
+    }
+    if(ui->dynamic224->isChecked()){
+        try{
+            eCallDynamics224Scenario(sim, TARGET_TYPE, DEVICE_IP, duration);
             nmeaData = reader(filePath);
             nmea = parser(nmeaData);
             // auto pdops = pdopGetter(nmea);
