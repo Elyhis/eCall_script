@@ -5,10 +5,6 @@
 
 #include "nmea.h"
 
-
-//Given a sentence, split it by the chosen delimiter by default ','
-// @param string str : string to split
-// @return vector<string> : vector of string splitted by ',' delimiter
 std::vector<std::string> splitString(const std::string& str) {
     char delimiter = ',';
     std::vector<std::string> tokens;
@@ -21,26 +17,30 @@ std::vector<std::string> splitString(const std::string& str) {
     return tokens;
 }
 
+void addTrame(nmea& nmea, std::string nmeaMessage){
+    //Split current message to read each fields
+        std::vector<std::string> sentence= splitString(nmeaMessage);
+        //Depends on id, push back splitted sentence to it's according vector
+        if( nmeaMessage.find("GGA") != std::string::npos){
+           nmea.gga.push_back(sentence);
+        }else if (nmeaMessage.find("VTG") != std::string::npos){
+            nmea.vtg.push_back(sentence);
+        }else if (nmeaMessage.find("GSA") != std::string::npos){
+            nmea.gsa.push_back(sentence);
+        }else if (nmeaMessage.find("GSV") != std::string::npos){
+            nmea.gsv.push_back(sentence);
+        }else if (nmeaMessage.find("RMC") != std::string::npos){
+            nmea.rmc.push_back(sentence);
+        }else{
+            std::cout << "Don't read this type of id" << std::endl;
+        }
+}
+
 
 nmea parser(std::vector<std::string> nmeaData){
     nmea parsed_nmea;
     for(std::string nmeaMessage : nmeaData){
-        //Split current message to read each fields
-        std::vector<std::string> sentence= splitString(nmeaMessage);
-        //Depends on id, push back splitted sentence to it's according vector
-        if( nmeaMessage.find("GGA") != std::string::npos){
-            parsed_nmea.gga.push_back(sentence);
-        }else if (nmeaMessage.find("VTG") != std::string::npos){
-            parsed_nmea.vtg.push_back(sentence);
-        }else if (nmeaMessage.find("GSA") != std::string::npos){
-            parsed_nmea.gsa.push_back(sentence);
-        }else if (nmeaMessage.find("GSV") != std::string::npos){
-            parsed_nmea.gsv.push_back(sentence);
-        }else if (nmeaMessage.find("RMC") != std::string::npos){
-            parsed_nmea.rmc.push_back(sentence);
-        }else{
-            std::cout << "Don't read this type of id" << std::endl;
-        }
+        addTrame(parsed_nmea,nmeaMessage);
     }
     return parsed_nmea;
 }
