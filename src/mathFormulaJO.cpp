@@ -11,27 +11,20 @@ const double SEMI_MAJOR_AXIS = 6378137.0;
 const double EXCENTRICITY = 0.0818191908426;
 const double ARCSEC_TO_RAD = (M_PI)/(180*3600);
 
-//Simple delta formula
 double delta(double value, double trueValue){
     return value - trueValue;
 }
 
-// Convert nmea data to decimal angle
 double nmeaToDecimal(double val) {
     int deg = (int)(val / 100);
     double min = val - (deg * 100);
     return deg + (min / 60.0);
 }
 
-// Convert decimal angle to arcsec
 double degToArcsec(double deg) {
     return deg * 3600.0;
 }
 
-// Calculate mean of systematic inaccuracy
-// @param std::vector<double> values : vector of coordinates to be used
-// @param double trueValue : reference value
-// @return mean coordinate determination
 double systematicInaccuracy(std::vector<double> values){
     double sumDelta = 0;
     for(int i = 0; i < values.size();i++){
@@ -40,10 +33,6 @@ double systematicInaccuracy(std::vector<double> values){
     return sumDelta/values.size();
 }
 
-// Calculate standard deviation
-// @param std::vector<double> values : vector of coordinates to be used
-// @param double inaccuracy : inaccuracy calculated
-// @return standard deviation (SD)
 double standardDeviation(std::vector<double> values, double mean){
     double result = 0;
     for(double val : values){
@@ -52,43 +41,26 @@ double standardDeviation(std::vector<double> values, double mean){
     return sqrt(result/(values.size()));
 }
 
-// calculate meridian curve radius
-// @param double phi : true lat used in the simulation
-// @return meridian curve radius
 double meridianCurve(double phi) {
     return SEMI_MAJOR_AXIS * (1 - pow(EXCENTRICITY,2)) / pow(1 - pow(EXCENTRICITY,2) * pow(sin(phi),2), 1.5);
 }
 
-// calculate parallel curve radius
-// @param double phi : true lat used in the simulation
 double parallelCurve(double phi) {
     return (SEMI_MAJOR_AXIS * cos(phi)) /sqrt(1 - pow(EXCENTRICITY,2) * pow(sin(phi),2));
 }
 
-// Convert calculated lat from arc-sec to meters
-// @param double phi : true lat used in the simulation
-// @param double latArsec : calculated systematic inaccuracy at the given lat
 double latArsecToMeters(double phi, double latArsec) {
     return meridianCurve(phi) * ARCSEC_TO_RAD * latArsec;
 }
-// Convert calculated lon from arc-sec to meters
-// @param double phi : true lat used in the simulation
-// @param double lonArsec : calculated systematic inaccuracy at the given lon
+
 double lonArsecToMeters(double phi, double lonArcsec) {
     return parallelCurve(phi) * ARCSEC_TO_RAD * lonArcsec;
 }
 
-// Calculate the overall horizontal position error
-// @param double meanLat: mean latitude in meters
-// @param double meanLon: mean longitude in meters
-// @param double sigmaBm: standard deviation of the latitude
-// @param double sigmaLm: standard deviation of the longitude
-// @return horizontal position error using COMMISSION DELEGATED REGULATION formula
 double horizontalPosError(double meanLat, double meanLon, double sigmaBm, double sigmaLm){
     return sqrt(pow(meanLat,2)+pow(meanLon,2))+2*sqrt(pow(sigmaBm,2)+pow(sigmaLm,2));
 }
 
-//Calculate distance between two point
 double distance(double first, double second){
     return sqrt(pow(first, 2) + pow(second, 2));
 }
