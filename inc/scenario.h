@@ -26,31 +26,31 @@ void setupSBAS(RemoteSimulator& sim);
 void setupFixPostion(RemoteSimulator& sim);
 
 //Test eCallDynamics223 (2.2.3)
-void eCallDynamics223(RemoteSimulator& sim , const std::string& targetType, const std::string& X300IP, int& duration);
+void eCallDynamics223Scenario(RemoteSimulator& sim , const std::string& targetType, const std::string& X300IP, int& duration);
 
 //Test eCallDynamics224 (2.2.4)
-void eCallDynamics224(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration);
+void eCallDynamics224Scenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration);
 
 //Test eCallStatic (2.2.2)
-void eCallStatic(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration);
+void eCallStaticScenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration);
 
 //Test eCallStaticGal (2.2.2.16)
-void eCallStaticGal(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration);
+void eCallStaticGalScenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration);
 
 //Test eCallStaticGPS (2.2.2.15)
-void eCallStaticGps(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration);
+void eCallStaticGpsScenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration);
 
 //Test eCallTTFF2253 (2.2.5.3)
 //TODO:
 // Find a way to have fixed position real time with receiver -> Answer : Need to know how to receive receiver data and treat them on my own
 // Must check trame GGA to 6 pos and verify to be != 0
-void eCallTTFF2253(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration);
+void eCallTTFF2253Scenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration);
 
 //Test eCallTTFF2258 (2.2.5.8)
 //TODO: all test to do
 // Find a way to have fixed position real time with receiver -> Answer : Need to know how to receive receiver data and treat them on my own
 // Must check trame GGA to 6 pos and verify to be != 0
-void eCallTTFF2258(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration);
+void eCallTTFF2258Scenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration);
 
 
 #endif //ENDIF SCEANRIO_H
