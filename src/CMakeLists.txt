@@ -17,6 +17,8 @@ qt_add_executable(app
     mainwindow.cpp
     mainwindow.ui
     ../inc/mainwindow.h
+    SerialPort.cpp
+    ../inc/SerialPort.h
 )
 
 target_include_directories(app PRIVATE ${PROJECT_SOURCE_DIR}/inc/sdx_api ${PROJECT_SOURCE_DIR}/inc)

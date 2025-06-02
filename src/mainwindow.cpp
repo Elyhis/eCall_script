@@ -2,15 +2,21 @@
 #include "ui_mainwindow.h"
 #include <QFile>
 #include <QTextStream>
+#include <QSerialPortInfo>
+#include <QMessageBox>
+#include <QDebug>
 
 #include <iostream>
 #include <tuple>
 #include <fstream>
+#include <vector>
 
 #include "lla.h"
 #include "command_exception.h"
 #include "date_time.h"
 
+
+#include "nmea.h"
 
 #include "scenario.h"
 #include "mathFormulaJO.h"
@@ -53,15 +59,24 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //ui->pushButton->isChecked();
+    loadPorts();
+    connect(&serialPort, &SerialPort::dataReveived, this, &MainWindow::readData);
 }
+
+void MainWindow::loadPorts()
+{   
+    foreach(auto &port, QSerialPortInfo::availablePorts()){
+        ui->cmbReceiver->addItem(port.portName());
+    }
+}
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_start_clicked()
 {
    
     std::vector<std::string> nmeaData;
@@ -106,7 +121,7 @@ void MainWindow::on_pushButton_clicked()
 
     if(ui->staticGPS_Gal_SBAB->isChecked()){
         try{
-            eCallStatic(sim, TARGET_TYPE, DEVICE_IP, duration);
+            eCallStaticScenario(sim, TARGET_TYPE, DEVICE_IP, duration);
             nmeaData = reader(filePath);
             nmea = parser(nmeaData);
             // auto pdops = pdopGetter(nmea);
@@ -115,9 +130,6 @@ void MainWindow::on_pushButton_clicked()
 
             // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
             // auto isField6OK = isField6Correct(nmea.gga);
-            //Disconnecting
-            // std::cout << "==> Disconnecting to the receiver" << std::endl;
-            // sim.call(DisconnectSerialPortReceiver::create());
             std::cout << "Mean value: " << mean << std::endl;
             //graph(nmea, horizontalPos);
 
@@ -131,6 +143,102 @@ void MainWindow::on_pushButton_clicked()
             std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
         }
     }
+    if(ui->staticGal->isChecked()){
+        try{
+            eCallStaticGalScenario(sim, TARGET_TYPE, DEVICE_IP, duration);
+            nmeaData = reader(filePath);
+            nmea = parser(nmeaData);
+            // auto pdops = pdopGetter(nmea);
+            // bool isPDOPOk = pdopAnalyzer(pdops);
+            auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, lla);
+
+            // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
+            // auto isField6OK = isField6Correct(nmea.gga);
+            std::cout << "Mean value: " << mean << std::endl;
+            //graph(nmea, horizontalPos);
+
+            
+        }catch (CommandException& e)
+        {
+        std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
+        }
+        catch (std::runtime_error& e)
+        {
+            std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
+        }
+    }
+    if(ui->staticGPS->isChecked()){
+        try{
+            eCallStaticGpsScenario(sim, TARGET_TYPE, DEVICE_IP, duration);
+            nmeaData = reader(filePath);
+            nmea = parser(nmeaData);
+            // auto pdops = pdopGetter(nmea);
+            // bool isPDOPOk = pdopAnalyzer(pdops);
+            auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, lla);
+
+            // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
+            // auto isField6OK = isField6Correct(nmea.gga);
+            std::cout << "Mean value: " << mean << std::endl;
+            //graph(nmea, horizontalPos);
+
+            
+        }catch (CommandException& e)
+        {
+        std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
+        }
+        catch (std::runtime_error& e)
+        {
+            std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
+        }
+    }
+    if(ui->Dynamic223->isChecked()){
+        try{
+            eCallDynamics223Scenario(sim, TARGET_TYPE, DEVICE_IP, duration);
+            nmeaData = reader(filePath);
+            nmea = parser(nmeaData);
+            // auto pdops = pdopGetter(nmea);
+            // bool isPDOPOk = pdopAnalyzer(pdops);
+            auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, lla);
+
+            // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
+            // auto isField6OK = isField6Correct(nmea.gga);
+            std::cout << "Mean value: " << mean << std::endl;
+            //graph(nmea, horizontalPos);
+
+            
+        }catch (CommandException& e)
+        {
+        std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
+        }
+        catch (std::runtime_error& e)
+        {
+            std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
+        }
+    }
+    // std::cout << "==> Disconnecting to the receiver" << std::endl;
+    // sim.call(DisconnectSerialPortReceiver::create());
     std::cout << "==> Connecting to the simulator" << std::endl;
     sim.disconnect();
+}
+
+void MainWindow::on_btnConnectReceiver_clicked()
+{
+
+    qDebug() << "Connecting to the receiver";
+    bool isConnected = serialPort.connect(ui->cmbReceiver->currentText(), QSerialPort::Baud38400, QSerialPort::Data8, QSerialPort::NoParity, QSerialPort::OneStop);
+    if(!isConnected){
+        QMessageBox::critical(this,"Error", "There is no connection");
+    }
+}
+
+
+void MainWindow::on_btnDisconnectReceiver_clicked()
+{
+    std::cout << "==> Diconnecting to the receiver" << std::endl;
+    serialPort.disconnect();
+}
+
+void MainWindow::readData(QByteArray data)
+{
+    ui->lstReceiverData->addItem(QString(data));
 }

@@ -2,9 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
-#include "nmea.h"
-#include <vector>
+#include "SerialPort.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,9 +22,16 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_start_clicked();
+
+    void on_btnConnectReceiver_clicked();
+
+    void on_btnDisconnectReceiver_clicked();
 
 private:
     Ui::MainWindow *ui;
+    SerialPort serialPort;
+    void loadPorts();
+    void readData(QByteArray data);
 };
 #endif // MAINWINDOW_H
