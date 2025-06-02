@@ -121,7 +121,7 @@ void setupFixPostion(RemoteSimulator& sim){
 }
 
 //Test eCallDynamics223 (2.2.3)
-void eCallDynamics223(RemoteSimulator& sim , const std::string& targetType, const std::string& X300IP, int& duration){
+void eCallDynamics223Scenario(RemoteSimulator& sim , const std::string& targetType, const std::string& X300IP, int& duration){
     std::cout << "=== eCallDynamics223 test ===" << std::endl;
 
     // Basic setup for the simulation
@@ -157,7 +157,7 @@ void eCallDynamics223(RemoteSimulator& sim , const std::string& targetType, cons
 }
 
 //Test eCallDynamics224 (2.2.4)
-void eCallDynamics224(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration){
+void eCallDynamics224Scenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration){
     std::cout << "=== eCallDynamics224 test ===" << std::endl;
 
     // Basic setup for the simulation
@@ -213,7 +213,7 @@ void eCallDynamics224(RemoteSimulator& sim, const std::string& targetType, const
 }
 
 //Test eCallStatic (2.2.2)
-void eCallStatic(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration){
+void eCallStaticScenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration){
     std::cout << "=== eCallStatic test ===" << std::endl;
 
     // Basic setup for the simulation
@@ -246,7 +246,7 @@ void eCallStatic(RemoteSimulator& sim, const std::string& targetType, const std:
 }
 
 //Test eCallStaticGal (2.2.2.16)
-void eCallStaticGal(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration){
+void eCallStaticGalScenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration){
     std::cout << "=== eCallStatic test ===" << std::endl;
 
     // Basic setup for the simulation
@@ -277,7 +277,7 @@ void eCallStaticGal(RemoteSimulator& sim, const std::string& targetType, const s
 }
 
 //Test eCallStaticGPS (2.2.2.15)
-void eCallStaticGps(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration){
+void eCallStaticGpsScenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration){
     std::cout << "=== eCallStaticGPS test ===" << std::endl;
 
     // Basic setup for the simulation
@@ -312,7 +312,7 @@ void eCallStaticGps(RemoteSimulator& sim, const std::string& targetType, const s
 //TODO:
 // Find a way to have fixed position real time with receiver -> Answer : Need to know how to receive receiver data and treat them on my own
 // Must check trame GGA to 6 pos and verify to be != 0
-void eCallTTFF2253(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration){
+void eCallTTFF2253Scenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration){
     std::cout << "=== eCallTTFF2253 test ===" << std::endl;
 
     // Basic setup for the simulation
@@ -355,7 +355,7 @@ void eCallTTFF2253(RemoteSimulator& sim, const std::string& targetType, const st
 //TODO: all test to do
 // Find a way to have fixed position real time with receiver -> Answer : Need to know how to receive receiver data and treat them on my own
 // Must check trame GGA to 6 pos and verify to be != 0
-void eCallTTFF2258(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration){
+void eCallTTFF2258Scenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration){
     std::cout << "=== eCallTTFF2258 test ===" << std::endl;
 
     // Basic setup for the simulation
