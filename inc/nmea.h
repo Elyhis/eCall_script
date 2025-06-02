@@ -13,6 +13,13 @@
     std::vector<std::vector<std::string>> rmc;
 };
 
+//Given a sentence, split it by the chosen delimiter by default ','
+// @param string str : string to split
+// @return vector<string> : vector of string splitted by ',' delimiter
+std::vector<std::string> splitString(const std::string& str);
+
+
+void addTrame(nmea& nmea, std::string nmeaMessage);
 
 //Parse nmeaData to an nmea type, split sentence and organize them by id
 // @param vector<string> nmeaData : nmea sentence
@@ -23,7 +30,5 @@ nmea parser(std::vector<std::string> nmeaData);
 // @param string file : path to nmea receiver data
 // @return vector<string> : vector with nmea sentence
 std::vector<std::string> reader(const std::string& file); 
-
-nmea parser(std::vector<std::string> nmeaData);
 
 #endif //ENDIF NMEA_H
