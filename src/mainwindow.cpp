@@ -26,35 +26,6 @@
 using namespace Sdx;
 
 
-// //FIXME: TEMP TO MAKE A GRAPH, WILL BE IN A UI COMPONENT
-// void graph(nmea nmea, std::vector<double> horizontalPos){
-//     std::vector<std::string> time;
-//     std::string filePath = "graph.csv";
-//     // file pointer
-//     std::fstream fout;
-    
-//     // opens an existing csv file or creates a new file.
-//     fout.open(filePath, std::fstream::out);
-//     fout << "Time(UTC),Position error (m)\n";
-//     int delta =nmea.rmc.size() - horizontalPos.size();
-//     delta = abs(delta);
-//     for(int i = 0; i < nmea.rmc.size();i++){
-//         if(nmea.rmc[i][2] != "V"){
-//             std::string temp = nmea.rmc[i][1];
-//             std::string hours = temp.substr(0, 2);  // Get the first two characters for hours
-//             std::string mins = temp.substr(2, 2);   // Get the next two characters for minutes
-//             std::string sec = temp.substr(4, 2);   // Get the last two characters for seconds
-//             std::string t = hours + ":" + mins + ":" + sec ;
-//             time.push_back(t);
-//         }
-//     }
-//     for(int i = 0; i < time.size();i++){
-//         fout << time[i] << "," << horizontalPos[i] << std::endl;
-//     }
-//     fout.close();
-// }
-
-
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -102,19 +73,13 @@ void MainWindow::on_start_clicked()
     const std::string DEVICE_IP = "";           // Change to "192.168.XXX.XXX" to execute on a TARGET_TYPE device
     int duration = 3600; // Time in seconde
 
-    // //Receiver parameters
-    // const std::string SERIAL_PORT = "COM5";
-    // const int BAUD_RATE = 38400;
-    // const SerialPortParity PARITY = SerialPortParity::NoParity;
-    // const int DATA_BITS = 8;
-    // const int STOP_BITS = 1;
-    // const SerialPortFlowControl FLOW_CONTROL = SerialPortFlowControl::NoFlowControl;
+
     setupReceiver();
 
     //Path to nmea output data
     //TODO: use GUI to take Skydel NMEA output
-    std::string filePath = ui->path->text().toStdString();
-    filePath += "/eCall";
+    std::filesystem::path filePath = ui->path->text().toStdString();
+    filePath = filePath / "eCall";
     //filePath = "C:/Users/Bryan.Barbe/Downloads/250514_090632_2.2.2_gps_gal_sbas_rcv.nmea";
     std::cout << "==> Connecting to the simulator" << std::endl;
     RemoteSimulator sim;
