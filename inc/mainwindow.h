@@ -28,10 +28,19 @@ private slots:
 
     void on_btnDisconnectReceiver_clicked();
 
+    void on_pathBtn_clicked();
+
+
 private:
     Ui::MainWindow *ui;
     SerialPort serialPort;
     void loadPorts();
     void readData(QByteArray data);
+    void setupReceiver();
+    QSerialPort::BaudRate baudRate();
+    QSerialPort::DataBits dataBits();
+    QSerialPort::Parity parity();
+    QSerialPort::StopBits stopBits();
+    QSerialPort::FlowControl flowControl();
 };
 #endif // MAINWINDOW_H

@@ -6,6 +6,7 @@
 #include <QSerialPortInfo>
 #include <QMessageBox>
 #include <QDebug>
+#include <QFileDialog>
 
 #include <iostream>
 #include <tuple>
@@ -60,6 +61,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->cmbBaudRate->setCurrentIndex(3);
     loadPorts();
 }
 
@@ -107,11 +109,13 @@ void MainWindow::on_start_clicked()
     // const int DATA_BITS = 8;
     // const int STOP_BITS = 1;
     // const SerialPortFlowControl FLOW_CONTROL = SerialPortFlowControl::NoFlowControl;
-    serialPort.setupReceiver(ui->cmbReceiver->currentText(), QSerialPort::Baud38400, QSerialPort::Data8, QSerialPort::NoParity, QSerialPort::OneStop);
+    setupReceiver();
 
     //Path to nmea output data
     //TODO: use GUI to take Skydel NMEA output
-    std::string filePath = "C:/Users/Bryan.Barbe/Downloads/250514_090632_2.2.2_gps_gal_sbas_rcv.nmea";
+    std::string filePath = ui->path->text().toStdString();
+    filePath += "/eCall";
+    //filePath = "C:/Users/Bryan.Barbe/Downloads/250514_090632_2.2.2_gps_gal_sbas_rcv.nmea";
     std::cout << "==> Connecting to the simulator" << std::endl;
     RemoteSimulator sim;
     sim.setVerbose(true);
@@ -259,10 +263,10 @@ void MainWindow::on_btnConnectReceiver_clicked()
 {
     qDebug() << "Connecting to the receiver";
     connect(&serialPort, &SerialPort::dataReceived, this, &MainWindow::readData);
-    serialPort.setupReceiver(ui->cmbReceiver->currentText(), QSerialPort::Baud38400, QSerialPort::Data8, QSerialPort::NoParity, QSerialPort::OneStop);
+    setupReceiver();
     bool isConnected = serialPort.connect();
     if(!isConnected){
-        QMessageBox::critical(this,"Error", "There is no connection");
+        QMessageBox::critical(this,"Error", "Connection error ! Verify receiver parameters");
     }
 }
 
@@ -277,3 +281,67 @@ void MainWindow::readData(QByteArray data)
 {
     ui->lstReceiverData->addItem(QString(data));
 }
+
+void MainWindow::setupReceiver(){
+    serialPort.setupReceiver(ui->cmbReceiver->currentText(), baudRate(), dataBits(), parity(), stopBits(), flowControl());
+}
+
+QSerialPort::BaudRate MainWindow::baudRate() {
+    QString baudText = ui->cmbBaudRate->currentText();
+
+    if (baudText == "1200") return QSerialPort::Baud1200;
+    else if (baudText == "2400") return QSerialPort::Baud2400;
+    else if (baudText == "4800") return QSerialPort::Baud4800;
+    else if (baudText == "19200") return QSerialPort::Baud19200;
+    else if (baudText == "38400") return QSerialPort::Baud38400;
+    else if (baudText == "57600") return QSerialPort::Baud57600;
+    else if (baudText == "115200") return QSerialPort::Baud115200;
+
+    return QSerialPort::Baud9600;
+}
+
+QSerialPort::DataBits MainWindow::dataBits(){
+    QString dataBits = ui->cmbDataBits->currentText();
+
+    if (dataBits == "5") return QSerialPort::Data5;
+    else if (dataBits == "6") return QSerialPort::Data6;
+    else if (dataBits == "7") return QSerialPort::Data7;
+
+    return QSerialPort::Data8;
+}
+
+QSerialPort::Parity MainWindow::parity(){
+    QString parity = ui->cmbParity->currentText();
+
+    if (parity == "Even") return QSerialPort::EvenParity;
+    else if (parity == "Odd") return QSerialPort::OddParity;
+    else if (parity == "Space") return QSerialPort::SpaceParity;
+    else if (parity == "Mark") return QSerialPort::MarkParity;
+
+    return QSerialPort::NoParity;
+}
+
+QSerialPort::FlowControl MainWindow::flowControl(){
+    QString flowControl = ui->cmbReceiver->currentText();
+
+    if (flowControl == "Hardware") return QSerialPort::HardwareControl;
+    else if (flowControl == "Software") return QSerialPort::SoftwareControl;
+
+    return QSerialPort::NoFlowControl;
+}
+
+QSerialPort::StopBits MainWindow::stopBits(){
+
+    if (ui->rBtn1Bit) return QSerialPort::OneStop;
+
+    return QSerialPort::TwoStop;
+}
+
+void MainWindow::on_pathBtn_clicked()
+{
+    QString dir = QFileDialog::getExistingDirectory(this,"Choisir un dossier", QString(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (!dir.isEmpty()) {
+        ui->path->setText(dir);
+    }
+}
+
