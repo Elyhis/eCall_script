@@ -64,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::loadPorts()
-{ 
+{   
     foreach(auto &port, QSerialPortInfo::availablePorts()){
         ui->cmbReceiver->addItem(port.portName());
     }
@@ -258,6 +258,7 @@ void MainWindow::on_start_clicked()
 void MainWindow::on_btnConnectReceiver_clicked()
 {
     qDebug() << "Connecting to the receiver";
+    connect(&serialPort, &SerialPort::dataReceived, this, &MainWindow::readData);
     serialPort.setupReceiver(ui->cmbReceiver->currentText(), QSerialPort::Baud38400, QSerialPort::Data8, QSerialPort::NoParity, QSerialPort::OneStop);
     bool isConnected = serialPort.connect();
     if(!isConnected){
@@ -268,6 +269,7 @@ void MainWindow::on_btnConnectReceiver_clicked()
 void MainWindow::on_btnDisconnectReceiver_clicked()
 {
     std::cout << "==> Diconnecting to the receiver" << std::endl;
+    disconnect(&serialPort, &SerialPort::dataReceived, this, &MainWindow::readData);
     serialPort.disconnect();
 }
 
