@@ -444,3 +444,71 @@ void eCallTTFF2258Scenario(RemoteSimulator& sim, const std::string& targetType, 
     sim.stop();
     qInfo() << "==> Disconnect from Simulator";
 }
+
+//Test eCallReAcq226 (2.2.6)
+// TODO: Test to code atm
+void eCallReAcq226(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int nbIteration, SerialPort& receiver){
+    std::cout << "=== eCallTTFF2253 test ===" << std::endl;
+
+    // Basic setup for the simulation
+    // Variable specific to simulation
+    DateTime date = DateTime(2017, 10, 4, 10, 0, 0);
+    std::string targetId = "MyOutputId";
+
+    setupSim(sim, date);
+    //Need to be at -130dBm, must rectify offset of setup
+    sim.call(SetSignalPowerOffset::create("L1CA", 0));
+    sim.call(SetSignalPowerOffset::create("E1", 0));
+
+    //Setup Vehicule
+    setupFixPostion(sim);
+
+    // Change constellation parameters
+    setupGPS(sim,false);
+    setupGalileo(sim,false);
+
+    // Signals
+    sim.call(SetModulationTarget::create(targetType, "", "", true, targetId));
+    sim.call(ChangeModulationTargetSignals::create(0, 12500000, 100000000, "UpperL", "L1CA,E1", -1, false, targetId));
+
+    // Start simulation
+    QTimer timer;
+    std::atomic<bool> isFixed = false;
+    QMutex mutex;
+
+    bool test = receiver.connect();
+    QObject::connect(&receiver, &SerialPort::dataReceived,
+    [&isFixed, &mutex](const QByteArray &data) {
+            QMutexLocker locker(&mutex);
+            std::vector<std::string> sentence = splitString(QString(data).toStdString());
+            if (sentence[0].find("GGA") != std::string::npos && sentence[6] != ("0")) {
+                isFixed = true;
+            }
+        }
+    );
+    // Lancer la simulation
+    qInfo() << "==> Starting the simulation";
+    auto start = std::chrono::high_resolution_clock::now();
+    sim.start();
+    // Boucle Qt temporaire
+    QEventLoop loop;
+    QTimer pollTimer;
+
+    QObject::connect(&pollTimer, &QTimer::timeout, [&]() {
+        QMutexLocker locker(&mutex);
+        if (isFixed) {
+            qInfo() << "FIX FOUND ";
+            loop.quit();  // Sortie propre dès qu’on a un fix
+        }
+    });
+    pollTimer.start(100); // Vérifie toutes les 100 ms
+    loop.exec();          // Bloque localement, mais laisse Qt fonctionner
+
+    // Après le fix
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
+    qInfo() << "Elapsed time: " << duration.count() << " seconds";
+
+    sim.stop();
+    qInfo() << "==> Disconnect from Simulator";
+}

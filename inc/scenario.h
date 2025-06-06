@@ -43,16 +43,12 @@ void eCallStaticGalScenario(RemoteSimulator& sim, const std::string& targetType,
 void eCallStaticGpsScenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration);
 
 //Test eCallTTFF2253 (2.2.5.3)
-//TODO:
-// Find a way to have fixed position real time with receiver -> Answer : Need to know how to receive receiver data and treat them on my own
-// Must check trame GGA to 6 pos and verify to be != 0
 void eCallTTFF2253Scenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int nbIteration, SerialPort& receiver);
 
 //Test eCallTTFF2258 (2.2.5.8)
-//TODO: all test to do
-// Find a way to have fixed position real time with receiver -> Answer : Need to know how to receive receiver data and treat them on my own
-// Must check trame GGA to 6 pos and verify to be != 0
 void eCallTTFF2258Scenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int nbIteration, SerialPort& receiver);
 
+//Test eCallTTFF2258 (2.2.5.8)
+void eCallReAcq226(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int nbIteration, SerialPort& receiver);
 
 #endif //ENDIF SCEANRIO_H
