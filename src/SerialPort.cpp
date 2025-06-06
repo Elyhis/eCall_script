@@ -5,12 +5,13 @@ SerialPort::SerialPort(QObject* parent) : QObject{parent}, serialPort(nullptr), 
 }
 
 void SerialPort::setupReceiver(QString portName,QSerialPort::BaudRate baudRate, QSerialPort::DataBits dataBits,
-    QSerialPort::Parity parity, QSerialPort::StopBits stopBits){
+    QSerialPort::Parity parity, QSerialPort::StopBits stopBits, QSerialPort::FlowControl flowControl){
         receiverInfo.portName = portName;
         receiverInfo.baudRate = baudRate;
         receiverInfo.dataBits = dataBits;
         receiverInfo.parity = parity;
         receiverInfo.stopBits = stopBits;
+        receiverInfo.flowControl = flowControl;
     }
 
 bool SerialPort::connect(){
@@ -24,6 +25,7 @@ bool SerialPort::connect(){
     serialPort->setDataBits(receiverInfo.dataBits);
     serialPort->setParity(receiverInfo.parity);
     serialPort->setStopBits(receiverInfo.stopBits);
+    serialPort->setFlowControl(receiverInfo.flowControl);
 
     if (!serialPort->open(QIODevice::ReadOnly)){
         return false;

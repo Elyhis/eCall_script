@@ -12,6 +12,7 @@ struct ReceiverInfo{
     QSerialPort::DataBits dataBits;
     QSerialPort::Parity parity;
     QSerialPort::StopBits stopBits;
+    QSerialPort::FlowControl flowControl;
 };
 
 class SerialPort : public QObject
@@ -20,7 +21,7 @@ class SerialPort : public QObject
 public:
     explicit SerialPort(QObject *parent = nullptr);
     void setupReceiver(QString portName,QSerialPort::BaudRate baudRate, QSerialPort::DataBits dataBits,
-    QSerialPort::Parity parity, QSerialPort::StopBits stopBits);
+    QSerialPort::Parity parity, QSerialPort::StopBits stopBits, QSerialPort::FlowControl flowControl);
     bool connect();
     bool disconnect();
 signals:
