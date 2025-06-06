@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 #include <QFile>
 #include <QTextStream>
 #include <QSerialPortInfo>
@@ -60,16 +61,14 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     loadPorts();
-    connect(&serialPort, &SerialPort::dataReveived, this, &MainWindow::readData);
 }
 
 void MainWindow::loadPorts()
-{   
+{ 
     foreach(auto &port, QSerialPortInfo::availablePorts()){
         ui->cmbReceiver->addItem(port.portName());
     }
 }
-
 
 MainWindow::~MainWindow()
 {
@@ -81,6 +80,8 @@ void MainWindow::on_start_clicked()
    
     std::vector<std::string> nmeaData;
     nmea nmea;
+
+    int nbIteration = 10;
 
     //FIXME: TEMP VALUE
     double latD = 42.2677;
@@ -106,6 +107,7 @@ void MainWindow::on_start_clicked()
     // const int DATA_BITS = 8;
     // const int STOP_BITS = 1;
     // const SerialPortFlowControl FLOW_CONTROL = SerialPortFlowControl::NoFlowControl;
+    serialPort.setupReceiver(ui->cmbReceiver->currentText(), QSerialPort::Baud38400, QSerialPort::Data8, QSerialPort::NoParity, QSerialPort::OneStop);
 
     //Path to nmea output data
     //TODO: use GUI to take Skydel NMEA output
@@ -239,22 +241,29 @@ void MainWindow::on_start_clicked()
             std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
         }
     }
-    // std::cout << "==> Disconnecting to the receiver" << std::endl;
-    // sim.call(DisconnectSerialPortReceiver::create());
-    std::cout << "==> Connecting to the simulator" << std::endl;
-    sim.disconnect();
+    if(ui->ttff2253->isChecked()){
+        try{
+            eCallTTFF2253Scenario(sim, TARGET_TYPE, DEVICE_IP, nbIteration, serialPort);
+        }catch (CommandException& e)
+        {
+        std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
+        }
+        catch (std::runtime_error& e)
+        {
+            std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
+        }
+    }
 }
 
 void MainWindow::on_btnConnectReceiver_clicked()
 {
-
     qDebug() << "Connecting to the receiver";
-    bool isConnected = serialPort.connect(ui->cmbReceiver->currentText(), QSerialPort::Baud38400, QSerialPort::Data8, QSerialPort::NoParity, QSerialPort::OneStop);
+    serialPort.setupReceiver(ui->cmbReceiver->currentText(), QSerialPort::Baud38400, QSerialPort::Data8, QSerialPort::NoParity, QSerialPort::OneStop);
+    bool isConnected = serialPort.connect();
     if(!isConnected){
         QMessageBox::critical(this,"Error", "There is no connection");
     }
 }
-
 
 void MainWindow::on_btnDisconnectReceiver_clicked()
 {
