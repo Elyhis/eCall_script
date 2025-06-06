@@ -1,29 +1,35 @@
 #include "SerialPort.h"
 
-SerialPort::SerialPort(QObject* parent) : QObject{parent}, serialPort(nullptr)
+SerialPort::SerialPort(QObject* parent) : QObject{parent}, serialPort(nullptr), receiverInfo(nullptr)
 {
 }
 
+void SerialPort::setupReceiver(QString portName,QSerialPort::BaudRate baudRate, QSerialPort::DataBits dataBits,
+    QSerialPort::Parity parity, QSerialPort::StopBits stopBits){
+        receiverInfo.portName = portName;
+        receiverInfo.baudRate = baudRate;
+        receiverInfo.dataBits = dataBits;
+        receiverInfo.parity = parity;
+        receiverInfo.stopBits = stopBits;
+    }
 
-bool SerialPort::connect(QString portName, QSerialPort::BaudRate baudRate, QSerialPort::DataBits dataBits,
-    QSerialPort::Parity parity, QSerialPort::StopBits stopBits ){
-    qDebug() << "if open close";
+bool SerialPort::connect(){
     if(serialPort != nullptr){
         serialPort->close();
         delete serialPort;
     }
-    qDebug() << "Setup port";
     serialPort = new QSerialPort(this);
-    serialPort->setPortName(portName);
-    serialPort->setBaudRate(baudRate);
-    serialPort->setDataBits(dataBits);
-    serialPort->setParity(parity);
-    serialPort->setStopBits(stopBits);
-    qDebug() << "connect port";
-    if(serialPort->open(QIODevice::ReadWrite)){
-        QObject::connect(serialPort, &QSerialPort::readyRead, this, &SerialPort::dataReady);
+    serialPort->setPortName(receiverInfo.portName);
+    serialPort->setBaudRate(receiverInfo.baudRate);
+    serialPort->setDataBits(receiverInfo.dataBits);
+    serialPort->setParity(receiverInfo.parity);
+    serialPort->setStopBits(receiverInfo.stopBits);
+
+    if (!serialPort->open(QIODevice::ReadOnly)){
+        return false;
     }
-    return serialPort->isOpen();
+    QObject::connect(serialPort, &QSerialPort::readyRead, this, &SerialPort::dataReady);
+    return true;
 }
 
 bool SerialPort::disconnect(){
@@ -35,10 +41,9 @@ bool SerialPort::disconnect(){
     return false;
 }
 
-void SerialPort::dataReady(){
-    if(serialPort->isOpen()){
-        emit dataReveived(serialPort->readLine());  
+void SerialPort::dataReady() {
+    if (serialPort->isOpen()) {
+        QByteArray line = serialPort->readLine();
+        emit dataReceived(line);
     }
 }
-
-

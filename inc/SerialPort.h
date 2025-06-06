@@ -6,19 +6,29 @@
 #include <QSerialPortInfo>
 #include <QMessageBox>
 
+struct ReceiverInfo{
+    QString portName;
+    QSerialPort::BaudRate baudRate;
+    QSerialPort::DataBits dataBits;
+    QSerialPort::Parity parity;
+    QSerialPort::StopBits stopBits;
+};
+
 class SerialPort : public QObject
 {
     Q_OBJECT
 public:
     explicit SerialPort(QObject *parent = nullptr);
-    bool connect(QString portName,QSerialPort::BaudRate baudRate, QSerialPort::DataBits dataBits,
+    void setupReceiver(QString portName,QSerialPort::BaudRate baudRate, QSerialPort::DataBits dataBits,
     QSerialPort::Parity parity, QSerialPort::StopBits stopBits);
+    bool connect();
     bool disconnect();
 signals:
-    void dataReveived(QByteArray(b));
+    void dataReceived(QByteArray data);
 private slots:
     void dataReady();
 private:
     QSerialPort* serialPort;
+    ReceiverInfo receiverInfo;
 };
 #endif
