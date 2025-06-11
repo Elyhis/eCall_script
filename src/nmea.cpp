@@ -45,7 +45,7 @@ nmea parser(std::vector<std::string> nmeaData){
     return parsed_nmea;
 }
 
-std::vector<std::string> reader(const std::string& file){
+std::vector<std::string> reader(const std::filesystem::path& file){
     std::vector<std::string> nmeaData;
     std::string buffer;
     //Open stream input to read the file
@@ -54,7 +54,6 @@ std::vector<std::string> reader(const std::string& file){
 
     //If file is found read each line
     if(fs.is_open()){
-        std::cout << "Reading file" << std::endl;
         while(getline(fs,buffer)){
             nmeaData.push_back(buffer);
         }

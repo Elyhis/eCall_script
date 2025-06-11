@@ -12,7 +12,7 @@ qt_add_executable(app
     MANUAL_FINALIZATION
     main.cpp
     nmea.cpp
-    scenario.cpp
+    Scenario.cpp
     mathFormulaJO.cpp
     mainwindow.cpp
     mainwindow.ui

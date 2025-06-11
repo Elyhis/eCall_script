@@ -9,48 +9,58 @@
 #include "remote_simulator.h"
 #include "attitude.h"
 
+#include "SerialPort.h"
+#include "lla.h"
+#include "nmea.h"
+
 using namespace Sdx;
 using namespace Sdx::Cmd;
 
-//Setup sim with same parameter for every test
-void setupSim(RemoteSimulator& sim, DateTime& date);
+class Scenario{
+    public:
+        //TODO: Add Cold Restart function
+        Scenario();
+        void eCallStatic(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, bool is221Checked);
+        void eCallStaticGal(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration);
+        void eCallStaticGps(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration);
+        void eCallDynamics223(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration);
+        void eCallDynamics224(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration);
+        void eCallTTFF2253(const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, SerialPort& receiver, int& nbIteration);
+        void eCallTTFF2258(const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, SerialPort& receiver, int& nbIteration);
+        void eCallReAcq226(const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, SerialPort& receiver, int& nbIteration);
 
-void setupTrackFromCSV(RemoteSimulator& sim, std::string path);
+    // signals:
+    //     void finished();
 
-void setupGalileo(RemoteSimulator& sim, bool shouldLoad224);
+    private:
+        // Position for static test
+        Lla fixedPosLla;
 
-void setupGPS(RemoteSimulator& sim, bool shouldLoad224);
 
-void setupSBAS(RemoteSimulator& sim);
+        //Setup sim with same parameter for every test
+        void setupSim(RemoteSimulator& sim, DateTime& date);
+        void setupTrackFromCSV(RemoteSimulator& sim, std::string path);
+        void setupGalileo(RemoteSimulator& sim, bool shouldLoad224);
+        void setupGPS(RemoteSimulator& sim, bool shouldLoad224);
+        void setupSBAS(RemoteSimulator& sim);
+        void setupFixPostion(RemoteSimulator& sim);
 
-void setupFixPostion(RemoteSimulator& sim);
-
-//Test eCallDynamics223 (2.2.3)
-void eCallDynamics223Scenario(RemoteSimulator& sim , const std::string& targetType, const std::string& X300IP, int& duration);
-
-//Test eCallDynamics224 (2.2.4)
-void eCallDynamics224Scenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration);
-
-//Test eCallStatic (2.2.2)
-void eCallStaticScenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration);
-
-//Test eCallStaticGal (2.2.2.16)
-void eCallStaticGalScenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration);
-
-//Test eCallStaticGPS (2.2.2.15)
-void eCallStaticGpsScenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration);
-
-//Test eCallTTFF2253 (2.2.5.3)
-//TODO:
-// Find a way to have fixed position real time with receiver -> Answer : Need to know how to receive receiver data and treat them on my own
-// Must check trame GGA to 6 pos and verify to be != 0
-void eCallTTFF2253Scenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration);
-
-//Test eCallTTFF2258 (2.2.5.8)
-//TODO: all test to do
-// Find a way to have fixed position real time with receiver -> Answer : Need to know how to receive receiver data and treat them on my own
-// Must check trame GGA to 6 pos and verify to be != 0
-void eCallTTFF2258Scenario(RemoteSimulator& sim, const std::string& targetType, const std::string& X300IP, int& duration, int nbIteration);
-
+        //Test eCallStatic (2.2.2)
+        void eCallStaticScenario(const std::string& HOST, const std::string& targetType, const std::string& X300IP, int& duration);
+        //Test eCallStaticGal (2.2.2.16)
+        void eCallStaticGalScenario(const std::string& HOST, const std::string& targetType, const std::string& X300IP, int& duration);
+        //Test eCallStaticGPS (2.2.2.15)
+        void eCallStaticGpsScenario(const std::string& HOST, const std::string& targetType, const std::string& X300IP, int& duration);
+        //Test eCallDynamics223 (2.2.3)
+        void eCallDynamics223Scenario(const std::string& HOST, const std::string& targetType, const std::string& X300IP, int& duration);
+        //Test eCallDynamics224 (2.2.4)
+        void eCallDynamics224Scenario(const std::string& HOST, const std::string& targetType, const std::string& X300IP, int& duration);
+        //Test eCallTTFF2253 (2.2.5.3)
+        std::chrono::seconds eCallTTFF2253Scenario(const std::string& HOST, const std::string& targetType, const std::string& X300IP, SerialPort& receiver);
+        //Test eCallTTFF2258 (2.2.5.8)
+        std::chrono::seconds eCallTTFF2258Scenario(const std::string& HOST, const std::string& targetType, const std::string& X300IP, SerialPort& receiver);
+        //Test ReAcq226 (2.2.6)
+        std::chrono::seconds eCallReAcq226Scenario(const std::string& HOST, const std::string& targetType, const std::string& X300IP, SerialPort& receiver);
+};
 
 #endif //ENDIF SCEANRIO_H

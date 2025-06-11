@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <filesystem>
 
  struct nmea
 {
@@ -29,6 +30,6 @@ nmea parser(std::vector<std::string> nmeaData);
 //Read a nmea file, split each sentence into a vector
 // @param string file : path to nmea receiver data
 // @return vector<string> : vector with nmea sentence
-std::vector<std::string> reader(const std::string& file); 
+std::vector<std::string> reader(const std::filesystem::path& file); 
 
 #endif //ENDIF NMEA_H
