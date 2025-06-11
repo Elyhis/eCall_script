@@ -39,8 +39,7 @@ jobs:
           chmod +x linuxdeployqt
       - name: Run linuxdeployqt
         run: |
-          ls
-          linuxdeployqt ./bin/app -verbose=2 -bundle-non-qt-libs
+          ./linuxdeployqt ./bin/app -verbose=2 -bundle-non-qt-libs
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
