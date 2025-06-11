@@ -54,7 +54,6 @@ std::vector<std::string> reader(const std::filesystem::path& file){
 
     //If file is found read each line
     if(fs.is_open()){
-        std::cout << "Reading file" << std::endl;
         while(getline(fs,buffer)){
             nmeaData.push_back(buffer);
         }
