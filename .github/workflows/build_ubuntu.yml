@@ -36,7 +36,7 @@ jobs:
       - name: Debug - List install directory
         run: |
           echo "CMAKE_INSTALL_DIR: $CMAKE_INSTALL_DIR"
-          ls -lR "$CMAKE_INSTALL_DIR"
+          ls -lR
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
