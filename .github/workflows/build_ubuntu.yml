@@ -26,7 +26,6 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt --yes install libgl1-mesa-dev libxkbcommon-x11-0 libpulse-dev libudev-dev uuid-dev
-          sudo apt install -y linuxdeployqt
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build
