@@ -1,0 +1,38 @@
+name: Build Ubuntu
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set environment variables
+        run: |
+          echo "ARTIFACT_NAME=eCall-${{ runner.os }}-${{ runner.arch }}" >> "$GITHUB_ENV"
+          echo "CMAKE_BUILD_DIR=${{ runner.temp }}/bin" >> "$GITHUB_ENV"
+          echo "CMAKE_INSTALL_DIR=${{ runner.temp }}/eCall-${{ runner.os }}-${{ runner.arch }}" >> "$GITHUB_ENV"
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '5.15.2'
+      - name: Install dependencies
+        run: |
+          sudo apt --yes install uuid-dev
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: |
+          cmake -D CMAKE_BUILD_TYPE=Release -D PLUGIN_INSTALL_DIR="${CMAKE_INSTALL_DIR}" -B "${CMAKE_BUILD_DIR}" .
+          cmake --build "${CMAKE_BUILD_DIR}" --parallel "$(nproc)"
+          cmake --install "${CMAKE_BUILD_DIR}"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.CMAKE_INSTALL_DIR }}
