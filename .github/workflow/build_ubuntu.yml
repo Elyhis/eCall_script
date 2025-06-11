@@ -20,10 +20,10 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: '5.15.2'
+          version: '6.9.0'
       - name: Install dependencies
         run: |
-          sudo apt --yes install uuid-dev
+          sudo apt --yes install libgl1-mesa-dev libxkbcommon-x11-0 libpulse-dev libudev-dev uuid-dev
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build
