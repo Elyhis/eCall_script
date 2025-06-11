@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Build
         run: |
-          cmake -D CMAKE_BUILD_TYPE=Release -D -B "${CMAKE_BUILD_DIR}" .
+          cmake -D CMAKE_BUILD_TYPE=Release -B "${CMAKE_BUILD_DIR}" .
           cmake --build "${CMAKE_BUILD_DIR}" --parallel "$(nproc)"
           cmake --install "${CMAKE_BUILD_DIR}"
       - name: Upload artifacts
