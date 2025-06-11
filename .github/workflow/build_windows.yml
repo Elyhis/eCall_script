@@ -1,0 +1,35 @@
+name: Build Windows
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-2019
+    steps:
+      - name: Set environment variables
+        run: |
+          echo "ARTIFACT_NAME=eCall-${{ runner.os }}-${{ runner.arch }}" >> "$env:GITHUB_ENV"
+          echo "CMAKE_BUILD_DIR=${{ runner.temp }}/bin" >> "$env:GITHUB_ENV"
+          echo "CMAKE_INSTALL_DIR=${{ runner.temp }}/eCall-${{ runner.os }}-${{ runner.arch }}" >> "$env:GITHUB_ENV"
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.9.0'
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: |
+          cmake -D CMAKE_CXX_FLAGS="/bigobj /EHsc" -D PLUGIN_INSTALL_DIR="$env:CMAKE_INSTALL_DIR" -B "$env:CMAKE_BUILD_DIR" .
+          cmake --build "$env:CMAKE_BUILD_DIR" --config Release --parallel "$env:NUMBER_OF_PROCESSORS"
+          cmake --install "$env:CMAKE_BUILD_DIR"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.CMAKE_INSTALL_DIR }}
