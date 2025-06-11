@@ -11,6 +11,8 @@
 #include <QThread>
 #include <QObject>
 #include <QDebug>
+#include <QEventLoop>
+
 
 #include <filesystem>
 #include <stdio.h>
