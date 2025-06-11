@@ -15,7 +15,7 @@
 #include <filesystem>
 #include <stdio.h>
 
-#include "scenario.h"
+#include "Scenario.h"
 #include "mathFormulaJO.h"
 
 using namespace Sdx;
@@ -131,7 +131,7 @@ void Scenario::eCallStatic(std::filesystem::path filePath, const std::string& HO
     nmea = parser(nmeaData);
     auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, fixedPosLla);
 
-    bool isHorizontalOK = isHorizontalErrorLessThan15(horizontalPos);
+    //bool isHorizontalOK = isHorizontalErrorLessThan15(horizontalPos);
     std::cout << "Mean value: " << mean << std::endl;
     if(is221Checked){
         // bool isField6OK = isField6Correct(nmea.gga);
@@ -146,7 +146,7 @@ void Scenario::eCallStaticGal(std::filesystem::path filePath, const std::string&
     nmea = parser(nmeaData);
     auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, fixedPosLla);
 
-    auto isHorizontalOK = isHorizontalErrorLessThan15(horizontalPos);
+    //auto isHorizontalOK = isHorizontalErrorLessThan15(horizontalPos);
     std::cout << "Mean value: " << mean << std::endl;
 }
 void Scenario::eCallStaticGps(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration){
