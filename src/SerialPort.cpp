@@ -4,6 +4,11 @@ SerialPort::SerialPort(QObject* parent) : QObject{parent}, serialPort(nullptr), 
 {
 }
 
+SerialPort::~SerialPort()
+{
+  disconnect();
+}
+
 void SerialPort::setupReceiver(QString portName,QSerialPort::BaudRate baudRate, QSerialPort::DataBits dataBits,
     QSerialPort::Parity parity, QSerialPort::StopBits stopBits, QSerialPort::FlowControl flowControl){
         receiverInfo.portName = portName;
@@ -48,4 +53,9 @@ void SerialPort::dataReady() {
         QByteArray line = serialPort->readLine();
         emit dataReceived(line);
     }
+}
+
+qint64 SerialPort::write(const char* data)
+{
+  return serialPort ? serialPort->write(data) : -1;
 }
