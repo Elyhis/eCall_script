@@ -41,8 +41,7 @@ jobs:
           echo "$PWD/squashfs-root" >> $GITHUB_PATH
       - name: Run linuxdeployqt
         run: |
-          cd "${{ env.CMAKE_INSTALL_DIR }}/bin"
-          squashfs-root/AppRun ./app -verbose=2 -bundle-non-qt-libs
+          squashfs-root/AppRun ./bin/app -verbose=2 -bundle-non-qt-libs
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
