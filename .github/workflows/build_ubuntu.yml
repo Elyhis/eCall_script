@@ -37,11 +37,9 @@ jobs:
         run: |
           wget -O linuxdeployqt https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
           chmod +x linuxdeployqt
-      - name: List
-        run: |
-          ls -lR
       - name: Run linuxdeployqt
         run: |
+          ls
           linuxdeployqt ./bin/app -verbose=2 -bundle-non-qt-libs
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
