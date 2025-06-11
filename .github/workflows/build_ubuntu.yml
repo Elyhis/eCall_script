@@ -41,7 +41,7 @@ jobs:
           echo "$PWD/squashfs-root" >> $GITHUB_PATH
       - name: Run linuxdeployqt
         run: |
-          squashfs-root/AppRun ./bin/app -verbose=2 -bundle-non-qt-libs
+          squashfs-root/AppRun ./bin/app -verbose=2 -bundle-non-qt-libs -exclude-libs=libqsqlmimer
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
