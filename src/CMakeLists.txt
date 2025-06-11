@@ -42,3 +42,7 @@ set_target_properties(app PROPERTIES
 )
 
 qt_finalize_executable(app)
+
+install(TARGETS app
+    RUNTIME DESTINATION bin
+)
