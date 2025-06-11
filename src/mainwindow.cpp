@@ -21,7 +21,7 @@
 #include "nmea.h"
 
 #include "scenario.h"
-#include "mathFormulaJO.h"
+
 
 using namespace Sdx;
 
@@ -37,7 +37,8 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::loadPorts()
-{   
+{
+    ui->cmbReceiver->clear();
     foreach(auto &port, QSerialPortInfo::availablePorts()){
         ui->cmbReceiver->addItem(port.portName());
     }
@@ -50,20 +51,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_start_clicked()
 {
-   
-    std::vector<std::string> nmeaData;
-    nmea nmea;
+    int nbIteration = 1;
+    Scenario scenario;
 
-    int nbIteration = 10;
-
-    //FIXME: TEMP VALUE
-    double latD = 42.2677;
-    double latR = latD * M_PI / 180;
-    double lonD = 354.6699 - 360;
-    double lonR = lonD * M_PI / 180;
-    double alt = 830;
-
-    Lla lla = Lla(latR, lonR, alt);
     // If you wish to connect to the simulator running on a remote computer,
     // change "localhost" for the remote computer's IP address, such as "192.168.1.100"
     const std::string HOST = "localhost";
@@ -73,18 +63,13 @@ void MainWindow::on_start_clicked()
     const std::string DEVICE_IP = "";           // Change to "192.168.XXX.XXX" to execute on a TARGET_TYPE device
     int duration = 3600; // Time in seconde
 
-
     setupReceiver();
 
     //Path to nmea output data
-    //TODO: use GUI to take Skydel NMEA output
     std::filesystem::path filePath = ui->path->text().toStdString();
     filePath = filePath / "eCall";
     //filePath = "C:/Users/Bryan.Barbe/Downloads/250514_090632_2.2.2_gps_gal_sbas_rcv.nmea";
-    std::cout << "==> Connecting to the simulator" << std::endl;
-    RemoteSimulator sim;
-    sim.setVerbose(true);
-    sim.connect(HOST);
+
 
     // std::cout << "==> Connecting to the receiver" << std::endl;
     // sim.call(ConnectSerialPortReceiver::create(SERIAL_PORT,BAUD_RATE,DATA_BITS,PARITY,STOP_BITS,FLOW_CONTROL));
@@ -92,18 +77,8 @@ void MainWindow::on_start_clicked()
 
     if(ui->staticGPS_Gal_SBAB->isChecked()){
         try{
-            eCallStaticScenario(sim, TARGET_TYPE, DEVICE_IP, duration);
-            nmeaData = reader(filePath);
-            nmea = parser(nmeaData);
-            // auto pdops = pdopGetter(nmea);
-            // bool isPDOPOk = pdopAnalyzer(pdops);
-            auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, lla);
-
-            // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
-            // auto isField6OK = isField6Correct(nmea.gga);
-            std::cout << "Mean value: " << mean << std::endl;
             //graph(nmea, horizontalPos);
-
+            scenario.eCallStatic(filePath, HOST, TARGET_TYPE, DEVICE_IP, duration, true);
             
         }catch (CommandException& e)
         {
@@ -116,19 +91,7 @@ void MainWindow::on_start_clicked()
     }
     if(ui->staticGal->isChecked()){
         try{
-            eCallStaticGalScenario(sim, TARGET_TYPE, DEVICE_IP, duration);
-            nmeaData = reader(filePath);
-            nmea = parser(nmeaData);
-            // auto pdops = pdopGetter(nmea);
-            // bool isPDOPOk = pdopAnalyzer(pdops);
-            auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, lla);
-
-            // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
-            // auto isField6OK = isField6Correct(nmea.gga);
-            std::cout << "Mean value: " << mean << std::endl;
-            //graph(nmea, horizontalPos);
-
-            
+            scenario.eCallStaticGal(filePath, HOST, TARGET_TYPE, DEVICE_IP, duration);
         }catch (CommandException& e)
         {
         std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
@@ -140,19 +103,7 @@ void MainWindow::on_start_clicked()
     }
     if(ui->staticGPS->isChecked()){
         try{
-            eCallStaticGpsScenario(sim, TARGET_TYPE, DEVICE_IP, duration);
-            nmeaData = reader(filePath);
-            nmea = parser(nmeaData);
-            // auto pdops = pdopGetter(nmea);
-            // bool isPDOPOk = pdopAnalyzer(pdops);
-            auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, lla);
-
-            // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
-            // auto isField6OK = isField6Correct(nmea.gga);
-            std::cout << "Mean value: " << mean << std::endl;
-            //graph(nmea, horizontalPos);
-
-            
+            scenario.eCallStaticGps(filePath, HOST, TARGET_TYPE, DEVICE_IP, duration);
         }catch (CommandException& e)
         {
         std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
@@ -164,19 +115,7 @@ void MainWindow::on_start_clicked()
     }
     if(ui->dynamic223->isChecked()){
         try{
-            eCallDynamics223Scenario(sim, TARGET_TYPE, DEVICE_IP, duration);
-            nmeaData = reader(filePath);
-            nmea = parser(nmeaData);
-            // auto pdops = pdopGetter(nmea);
-            // bool isPDOPOk = pdopAnalyzer(pdops);
-            auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, lla);
-
-            // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
-            // auto isField6OK = isField6Correct(nmea.gga);
-            std::cout << "Mean value: " << mean << std::endl;
-            //graph(nmea, horizontalPos);
-
-            
+            scenario.eCallDynamics223(filePath, HOST, TARGET_TYPE, DEVICE_IP, duration);
         }catch (CommandException& e)
         {
         std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
@@ -188,19 +127,7 @@ void MainWindow::on_start_clicked()
     }
     if(ui->dynamic224->isChecked()){
         try{
-            eCallDynamics224Scenario(sim, TARGET_TYPE, DEVICE_IP, duration);
-            nmeaData = reader(filePath);
-            nmea = parser(nmeaData);
-            // auto pdops = pdopGetter(nmea);
-            // bool isPDOPOk = pdopAnalyzer(pdops);
-            auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, lla);
-
-            // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
-            // auto isField6OK = isField6Correct(nmea.gga);
-            std::cout << "Mean value: " << mean << std::endl;
-            //graph(nmea, horizontalPos);
-
-            
+            scenario.eCallDynamics224(filePath, HOST, TARGET_TYPE, DEVICE_IP, duration);            
         }catch (CommandException& e)
         {
         std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
@@ -212,7 +139,7 @@ void MainWindow::on_start_clicked()
     }
     if(ui->ttff2253->isChecked()){
         try{
-            eCallTTFF2253Scenario(sim, TARGET_TYPE, DEVICE_IP, nbIteration, serialPort);
+            scenario.eCallTTFF2253(HOST, TARGET_TYPE, DEVICE_IP, serialPort, nbIteration);
         }catch (CommandException& e)
         {
         std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
@@ -308,5 +235,11 @@ void MainWindow::on_pathBtn_clicked()
     if (!dir.isEmpty()) {
         ui->path->setText(dir);
     }
+}
+
+
+void MainWindow::on_btnRefreshPortList_clicked()
+{
+    loadPorts();
 }
 

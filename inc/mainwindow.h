@@ -31,6 +31,8 @@ private slots:
     void on_pathBtn_clicked();
 
 
+    void on_btnRefreshPortList_clicked();
+
 private:
     Ui::MainWindow *ui;
     SerialPort serialPort;
