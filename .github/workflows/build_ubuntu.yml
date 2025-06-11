@@ -33,13 +33,16 @@ jobs:
           cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_BUILD_PREFIX="${CMAKE_INSTALL_DIR}" -B "${CMAKE_BUILD_DIR}" .
           cmake --build "${CMAKE_BUILD_DIR}" --parallel "$(nproc)"
           cmake --install "${CMAKE_BUILD_DIR}"
-      - name: Download linuxdeployqt
+      - name: Download and extract linuxdeployqt
         run: |
-          wget -O linuxdeployqt https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
-          chmod +x linuxdeployqt
+          wget -O linuxdeployqt.AppImage https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
+          chmod +x linuxdeployqt.AppImage
+          ./linuxdeployqt.AppImage --appimage-extract
+          echo "$PWD/squashfs-root" >> $GITHUB_PATH
       - name: Run linuxdeployqt
         run: |
-          ./linuxdeployqt ./bin/app -verbose=2 -bundle-non-qt-libs
+          cd "${{ env.CMAKE_INSTALL_DIR }}/bin"
+          squashfs-root/AppRun ./app -verbose=2 -bundle-non-qt-libs
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
