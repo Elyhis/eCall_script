@@ -17,6 +17,7 @@ jobs:
           echo "ARTIFACT_NAME=eCall-${{ runner.os }}-${{ runner.arch }}" >> "$GITHUB_ENV"
           echo "CMAKE_BUILD_DIR=${{ runner.temp }}/bin" >> "$GITHUB_ENV"
           echo "CMAKE_INSTALL_DIR=${{ runner.temp }}/eCall-${{ runner.os }}-${{ runner.arch }}" >> "$GITHUB_ENV"
+          echo "CMAKE_PREFIX_PATH=$Qt6_DIR" >> $GITHUB_ENV
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
