@@ -20,7 +20,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: '6.9.0'
+          version: '6.6.3'
           modules: 'qtserialport'
       - name: Install dependencies
         run: |
