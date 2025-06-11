@@ -20,7 +20,7 @@
 
 #include "nmea.h"
 
-#include "scenario.h"
+#include "Scenario.h"
 
 
 using namespace Sdx;
