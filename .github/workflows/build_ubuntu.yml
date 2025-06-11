@@ -33,12 +33,8 @@ jobs:
           cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_BUILD_PREFIX="${CMAKE_INSTALL_DIR}" -B "${CMAKE_BUILD_DIR}" .
           cmake --build "${CMAKE_BUILD_DIR}" --parallel "$(nproc)"
           cmake --install "${CMAKE_BUILD_DIR}"
-      - name: Debug - List install directory
-        run: |
-          echo "CMAKE_INSTALL_DIR: $CMAKE_INSTALL_DIR"
-          ls -lR
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.CMAKE_INSTALL_DIR/bin }}
+          path: ${{ env.CMAKE_INSTALL_DIR }}
