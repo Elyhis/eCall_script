@@ -25,7 +25,7 @@ jobs:
           modules: 'qtserialport'
       - name: Install dependencies
         run: |
-          sudo apt --yes install libgl1-mesa-dev libxkbcommon-x11-0 libpulse-dev libudev-dev uuid-dev
+          sudo apt --yes install libgl1-mesa-dev libxkbcommon-x11-0 libpulse-dev libudev-dev uuid-dev linuxdeployqt
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build
@@ -33,6 +33,11 @@ jobs:
           cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_BUILD_PREFIX="${CMAKE_INSTALL_DIR}" -B "${CMAKE_BUILD_DIR}" .
           cmake --build "${CMAKE_BUILD_DIR}" --parallel "$(nproc)"
           cmake --install "${CMAKE_BUILD_DIR}"
+      - name: Run linuxdeployqt
+        run: |
+          cd "${CMAKE_INSTALL_DIR}/bin"
+          linuxdeployqt ./app -verbose=2 -bundle-non-qt-libs
+          cd -
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
