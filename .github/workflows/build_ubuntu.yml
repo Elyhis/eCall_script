@@ -39,7 +39,7 @@ jobs:
           chmod +x linuxdeployqt
       - name: Run linuxdeployqt
         run: |
-          cd "${CMAKE_INSTALL_DIR}/bin"
+          cd ./bin
           linuxdeployqt ./app -verbose=2 -bundle-non-qt-libs
           cd -
       - name: Upload artifacts
