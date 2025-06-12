@@ -6,7 +6,13 @@ list(APPEND CMAKE_PREFIX_PATH "C:/Qt/6.9.0/msvc2022_64/lib/cmake/Qt6")
 
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets SerialPort)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets SerialPort)
+find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
+execute_process(
+    COMMAND ${Python3_EXECUTABLE} -c "import numpy; print(numpy.get_include())"
+    OUTPUT_VARIABLE NumPy_INCLUDE_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
 qt_add_executable(app
     MANUAL_FINALIZATION
@@ -19,12 +25,13 @@ qt_add_executable(app
     ../inc/mainwindow.h
     SerialPort.cpp
     ../inc/SerialPort.h
+    utils.cpp
 )
 
-target_include_directories(app PRIVATE ${PROJECT_SOURCE_DIR}/inc/sdx_api ${PROJECT_SOURCE_DIR}/inc)
+target_include_directories(app PRIVATE ${PROJECT_SOURCE_DIR}/inc/sdx_api ${PROJECT_SOURCE_DIR}/inc ${Python3_INCLUDE_DIRS} ${NumPy_INCLUDE_DIR})
 
 # Lier avec la bibliothèque sdx_api si nécessaire
-target_link_libraries(app PRIVATE sdx_api Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::SerialPort)
+target_link_libraries(app PRIVATE sdx_api Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::SerialPort ${Python3_LIBRARIES})
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
