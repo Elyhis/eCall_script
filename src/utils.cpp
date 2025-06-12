@@ -1,3 +1,16 @@
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
+#include <numpy/arrayobject.h>
+
+#include "matplotlibcpp.h"
+namespace plt = matplotlibcpp;
+
+
+#include <sstream>
+#include <chrono>
+#include <filesystem>
+
+
 // //FIXME: TEMP TO MAKE A GRAPH, WILL BE IN A UI COMPONENT
 // void graph(nmea nmea, std::vector<double> horizontalPos){
 //     std::vector<std::string> time;
@@ -25,3 +38,12 @@
 //     }
 //     fout.close();
 // }
+
+std::string logTime(){
+    auto now = std::chrono::system_clock::now();
+    // Convert to local time
+    auto localTime = std::chrono::system_clock::to_time_t(now);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&localTime), "[%d/%m/%Y %T]");
+    return ss.str();
+}
