@@ -194,15 +194,14 @@ void Scenario::eCallDynamics224(std::filesystem::path filePath, const std::strin
     // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
     std::cout << "Mean value: " << mean << std::endl;
 }
-//FIXME: Test only run once, need to run nbIteration times
 void Scenario::eCallTTFF2253(const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, SerialPort& receiver, int& nbIteration){
     std::vector<std::chrono::seconds> durations;
     for(int i = 0; i < nbIteration; i++){
         // QEventLoop loop;
         // QObject::connect(this, Scenario::finished, &loop, &QEventLoop::quit);
         std::chrono::seconds duration = eCallTTFF2253Scenario(HOST, TARGET_TYPE, DEVICE_IP, receiver);
-        durations.push_back(duration);
         //loop.exec();
+        durations.push_back(duration);
         qInfo() << "Iteration " << i << " duration: " << duration.count() << " ms";
     }
     bool isSuccess = false;
@@ -211,7 +210,36 @@ void Scenario::eCallTTFF2253(const std::string& HOST, const std::string& TARGET_
     }
 }
 void Scenario::eCallTTFF2258(const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, SerialPort& receiver, int& nbIteration){
-    auto duration = eCallTTFF2258Scenario(HOST, TARGET_TYPE, DEVICE_IP, receiver);
+    std::vector<std::chrono::seconds> durations;
+    for(int i = 0; i < nbIteration; i++){
+        // QEventLoop loop;
+        // QObject::connect(this, Scenario::finished, &loop, &QEventLoop::quit);
+        std::chrono::seconds duration = eCallTTFF2258Scenario(HOST, TARGET_TYPE, DEVICE_IP, receiver);
+        //loop.exec();
+        durations.push_back(duration);
+        qInfo() << "Iteration " << i << " duration: " << duration.count() << " ms";
+    }
+    bool isSuccess = false;
+    for(std::chrono::seconds time : durations){
+        isSuccess |= (time.count() < 20);
+    }
+}
+
+void Scenario::eCallReAcq226(const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, SerialPort& receiver, int& nbIteration){
+    std::vector<std::chrono::seconds> durations;
+    for(int i = 0; i < nbIteration; i++){
+        // QEventLoop loop;
+        // QObject::connect(this, Scenario::finished, &loop, &QEventLoop::quit);
+        std::chrono::seconds duration = eCallReAcq226Scenario(HOST, TARGET_TYPE, DEVICE_IP, receiver);
+        //loop.exec();
+        durations.push_back(duration);
+        qInfo() << "Iteration " << i << " duration: " << duration.count() << " ms";
+    }
+    bool isSuccess = false;
+    for(std::chrono::seconds time : durations){
+        isSuccess |= (time.count() < 20);
+    }
+    
 }
 
 // SCENARIO

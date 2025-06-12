@@ -149,6 +149,18 @@ void MainWindow::on_start_clicked()
             std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
         }
     }
+    if(ui->reAcq226->isChecked()){
+        try{
+            scenario.eCallReAcq226(HOST, TARGET_TYPE, DEVICE_IP, serialPort, nbIteration);
+        }catch (CommandException& e)
+        {
+        std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
+        }
+        catch (std::runtime_error& e)
+        {
+            std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
+        }
+    }
 }
 
 void MainWindow::on_btnConnectReceiver_clicked()
