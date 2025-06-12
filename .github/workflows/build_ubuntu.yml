@@ -61,6 +61,9 @@ jobs:
           Categories=Utility;
           EOF
 
+          # Crée une icône fictive (remplace par la tienne si dispo)
+          convert -size 256x256 xc:blue AppDir/usr/share/icons/hicolor/256x256/apps/eCall.png
+
           export VERSION="v1.0.0"
           export EXTRA_QT_PLUGINS=svg
           export LD_LIBRARY_PATH=${QT_ROOT_DIR}/lib:$PWD/AppDir/usr/lib
