@@ -10,7 +10,7 @@
 
 ### Ubuntu
 Open a Terminal in the current folder and execute the following:
-    ```
+    ```bash
     mkdir build
     cd build
     cmake ..
@@ -20,7 +20,7 @@ Open a Terminal in the current folder and execute the following:
 
 ### Windows
 Open a Command Prompt in the current folder and execute the following:
-    ```
+    ```bash
     mkdir build
     cd build
     call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
@@ -29,3 +29,7 @@ Open a Command Prompt in the current folder and execute the following:
     cd bin/Release
     windeployqt app.exe
     ```
+
+### REQUIREMENT
+
+This app use Qt and need some dependencies to work, make sure to import correct .so/.dll using [linuxdeployqt](https://github.com/probonopd/linuxdeployqt) or windeployqt
