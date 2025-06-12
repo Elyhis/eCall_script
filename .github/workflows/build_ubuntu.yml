@@ -57,7 +57,7 @@ jobs:
           export OUTPUT=eCall-${VERSION}_Linux_x86_64.AppImage
           # Avoid shipping the debug information
           find AppDir -name \*.debug -delete
-           ./linuxdeploy-x86_64.AppImage --appdir AppDir --desktop-file AppDir/usr/share/applications/eCall.desktop --icon-file AppDir/usr/share/icons/hicolor/256x256/apps/eCall.png --output appimage --plugin qt
+           ./linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage --plugin qt
 
       - name: Upload AppImage artifact
         uses: actions/upload-artifact@v4
