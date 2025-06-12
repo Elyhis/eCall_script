@@ -51,13 +51,23 @@ jobs:
           mkdir -p AppDir/usr/share/applications
           mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
 
+          # Crée un .desktop minimal
+          cat > AppDir/usr/share/applications/eCall.desktop <<EOF
+          [Desktop Entry]
+          Type=Application
+          Name=eCall
+          Exec=app
+          Icon=eCall
+          Categories=Utility;
+          EOF
+
           export VERSION="v1.0.0"
           export EXTRA_QT_PLUGINS=svg
           export LD_LIBRARY_PATH=${QT_ROOT_DIR}/lib:$PWD/AppDir/usr/lib
           export OUTPUT=eCall-${VERSION}_Linux_x86_64.AppImage
           # Avoid shipping the debug information
           find AppDir -name \*.debug -delete
-           ./linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage --plugin qt
+           ./linuxdeploy-x86_64.AppImage --appdir AppDir --desktop-file AppDir/usr/share/applications/eCall.desktop --output appimage --plugin qt
 
       - name: Upload AppImage artifact
         uses: actions/upload-artifact@v4
