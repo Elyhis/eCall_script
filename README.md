@@ -29,4 +29,4 @@ cmake --build .
 
 ### REQUIREMENT
 
-This app use Qt and need some dependencies to work, make sure to import correct .so/.dll using [linuxdeployqt](https://github.com/probonopd/linuxdeployqt) or windeployqt
+This app use Qt and need some dependencies to work, make sure to import correct .so/.dll using [linuxdeployqt](https://github.com/probonopd/linuxdeployqt) or [windeployqt](https://doc.qt.io/qt-6/windows-deployment.html)
