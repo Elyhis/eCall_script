@@ -19,9 +19,13 @@ jobs:
           echo "CMAKE_INSTALL_DIR=${{ runner.temp }}/eCall-${{ runner.os }}-${{ runner.arch }}" >> "$GITHUB_ENV"
           echo "CMAKE_PREFIX_PATH=$Qt6_DIR" >> $GITHUB_ENV
       - name: Install Qt
-        uses: jurplel/install-qt-action@v4
+        uses: jurplel/install-qt-action@v3
         with:
-          version: '6.6.3'
+          aqtversion: '==3.1.*'
+          version: '6.9.0'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'linux_gcc_64'
           modules: 'qtserialport'
       - name: Install dependencies
         run: |
@@ -33,17 +37,22 @@ jobs:
           cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_BUILD_PREFIX="${CMAKE_INSTALL_DIR}" -B "${CMAKE_BUILD_DIR}" .
           cmake --build "${CMAKE_BUILD_DIR}" --parallel "$(nproc)"
           cmake --install "${CMAKE_BUILD_DIR}"
-      - name: Download and extract linuxdeployqt
+          
+      - name: Build AppImage
         run: |
-          wget -O linuxdeployqt.AppImage https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
-          chmod +x linuxdeployqt.AppImage
-          ./linuxdeployqt.AppImage --appimage-extract
-          echo "$PWD/squashfs-root" >> $GITHUB_PATH
-      - name: Run linuxdeployqt
-        run: |
-          squashfs-root/AppRun ./bin/app -verbose=2 -bundle-non-qt-libs -exclude-libs=libqsqlmimer
-      - name: Upload artifacts
+          wget --no-verbose "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage"
+          wget --no-verbose "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage"
+          chmod +x linuxdeploy*.AppImage
+          
+          export EXTRA_QT_PLUGINS=svg
+          export LD_LIBRARY_PATH=${QT_ROOT_DIR}/lib:$PWD/AppDir/usr/lib
+          export OUTPUT=eCall-${VERSION}_Linux_x86_64.AppImage
+          # Avoid shipping the debug information
+          find AppDir -name \*.debug -delete
+          ./linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage --plugin qt
+
+      - name: Upload AppImage artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ./bin
+          name: eCall-AppImage
+          path: ./*.AppImage
