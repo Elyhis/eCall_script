@@ -20,7 +20,7 @@ Open a Terminal in the current folder and execute the following:
 
 ### Windows
 Open a Command Prompt in the current folder and execute the following:
-    ```bash
+    ```
     mkdir build
     cd build
     call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
