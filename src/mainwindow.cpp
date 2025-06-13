@@ -115,7 +115,7 @@ void MainWindow::on_start_clicked()
     }
     if(ui->staticGal->isChecked()){
         try{
-            scenario.eCallStaticGal(filePath, HOST, TARGET_TYPE, DEVICE_IP, duration);
+            scenario.eCallStaticGal(filePath, HOST, TARGET_TYPE, DEVICE_IP, duration, report);
         }catch (CommandException& e)
         {
         std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;

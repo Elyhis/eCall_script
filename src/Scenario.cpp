@@ -140,7 +140,6 @@ void Scenario::eCallStatic(std::filesystem::path filePath, const std::string& HO
     nmea = parser(nmeaData);
     auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, fixedPosLla);
     report << "<div>" << logTime() <<" NMEA analyzed</div>";
-    //TODO: graph function need to create an image
     graph(nmea, horizontalPos, "eCallStatic");
     report << "<img src=\"graph_eCallStatic.png\">" ;
     report << "<div>" << logTime() << " Horizontal position error:" << mean << "m. Expected <= 15.00 m</div>";
@@ -153,17 +152,33 @@ void Scenario::eCallStatic(std::filesystem::path filePath, const std::string& HO
         // bool isField6OK = isField6Correct(nmea.gga);
     }
 }
-void Scenario::eCallStaticGal(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration){
+void Scenario::eCallStaticGal(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, std::fstream& report){
     std::vector<std::string> nmeaData;
     nmea nmea;
+    
+    report << "<div>" << logTime() <<" Static Galileo (2.2.2)</div>";
+    report << "<div>" << logTime() <<" Cold starting receiver</div>";
+    //TODO: COLD START TO DO
+    report << "<div>" << logTime() <<" Receiver cold start complete</div>";
+    report << "<div>" << logTime() <<" Starting eCallStatic</div>";
+    report << "<div>" << logTime() <<" Scenario started</div>";
 
     eCallStaticGalScenario(HOST, TARGET_TYPE, DEVICE_IP, duration);
+    report << "<div>" << logTime() <<" Scenario ended</div>";
+    report << "<div>" << logTime() <<" Analyzing NMEA</div>";
     nmeaData = reader(filePath);
     nmea = parser(nmeaData);
     auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, fixedPosLla);
-
-    //auto isHorizontalOK = isHorizontalErrorLessThan15(horizontalPos);
-    std::cout << "Mean value: " << mean << std::endl;
+    report << "<div>" << logTime() <<" NMEA analyzed</div>";
+    report << "<div>" << logTime() <<" NMEA analyzed</div>";
+    graph(nmea, horizontalPos, "eCallStatic");
+    report << "<img src=\"graph_eCallStatic.png\">" ;
+    report << "<div>" << logTime() << " Horizontal position error:" << mean << "m. Expected <= 15.00 m</div>";
+    if(mean <= 15.0){
+        report << "<div style=\"background-color: rgb(52, 178, 51);\">" << logTime() <<" Test Passed</div>";
+    }else{
+        report << "<div style=\"background-color: rgb(255, 60, 60);\">" << logTime() <<" Test Failed</div>" ;
+    }
 }
 void Scenario::eCallStaticGps(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration){
     std::vector<std::string> nmeaData;
