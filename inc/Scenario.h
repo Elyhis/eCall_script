@@ -1,5 +1,5 @@
-#ifndef SCEANRIO_H
-#define SCEANRIO_H
+#ifndef SCENARIO_H
+#define SCENARIO_H
 
 #include <string>
 
@@ -20,7 +20,7 @@ class Scenario{
     public:
         //TODO: Add Cold Restart function
         Scenario();
-        void eCallStatic(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, bool is221Checked);
+        void eCallStatic(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, bool is221Checked, std::fstream &report);
         void eCallStaticGal(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration);
         void eCallStaticGps(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration);
         void eCallDynamics223(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration);

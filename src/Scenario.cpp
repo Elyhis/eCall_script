@@ -1,8 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <sstream>
-#include <vector>
-#include <chrono>
 #include <atomic>
 
 #include <QMutex>
@@ -13,12 +10,12 @@
 #include <QDebug>
 #include <QEventLoop>
 
-
-#include <filesystem>
 #include <stdio.h>
 
 #include "Scenario.h"
 #include "mathFormulaJO.h"
+#include "utils.h"
+
 
 using namespace Sdx;
 using namespace Sdx::Cmd;
@@ -124,17 +121,34 @@ void Scenario::setupFixPostion(RemoteSimulator& sim){
 }
 
 // TEST
-void Scenario::eCallStatic(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, bool is221Checked){
+void Scenario::eCallStatic(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, bool is221Checked, std::fstream& report){
     std::vector<std::string> nmeaData;
     nmea nmea;
 
+    report << "<div>" << logTime() <<" Combined GPS/Galileo/SBAS test case (2.2.2)</div>";
+    report << "<div>" << logTime() <<" Cold starting receiver</div>";
+    //TODO: COLD START TO DO
+    report << "<div>" << logTime() <<" Receiver cold start complete</div>";
+    report << "<div>" << logTime() <<" Starting eCallStatic</div>";
+    report << "<div>" << logTime() <<" Scenario started</div>";
+    
     eCallStaticScenario(HOST, TARGET_TYPE, DEVICE_IP, duration);
+
+    report << "<div>" << logTime() <<" Scenario ended</div>";
+    report << "<div>" << logTime() <<" Analyzing NMEA</div>";
     nmeaData = reader(filePath);
     nmea = parser(nmeaData);
     auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, fixedPosLla);
-
-    //bool isHorizontalOK = isHorizontalErrorLessThan15(horizontalPos);
-    std::cout << "Mean value: " << mean << std::endl;
+    report << "<div>" << logTime() <<" NMEA analyzed</div>";
+    //TODO: graph function need to create an image
+    graph(nmea, horizontalPos, "eCallStatic");
+    report << "<img src=\"graph_eCallStatic.png\">" ;
+    report << "<div>" << logTime() << " Horizontal position error:" << mean << "m. Expected <= 15.00 m</div>";
+    if(mean <= 15.0){
+        report << "<div style=\"background-color: rgb(52, 178, 51);\">" << logTime() <<" Test Passed</div>";
+    }else{
+        report << "<div style=\"background-color: rgb(255, 60, 60);\">" << logTime() <<" Test Failed</div>" ;
+    }
     if(is221Checked){
         // bool isField6OK = isField6Correct(nmea.gga);
     }
