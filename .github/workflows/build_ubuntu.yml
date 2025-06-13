@@ -29,12 +29,17 @@ jobs:
           modules: 'qtserialport'
       - name: Install dependencies
         run: |
-          sudo apt --yes install libgl1-mesa-dev libxkbcommon-x11-0 libxcb-cursor0 libpulse-dev libudev-dev  uuid-dev
+          sudo apt --yes install libgl1-mesa-dev libxkbcommon-x11-0 libxcb-cursor0 libpulse-dev libudev-dev  uuid-dev python3-dev python3-numpy
+      - name: Install Python packages
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install numpy
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build
         run: |
-          cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_BUILD_PREFIX="${CMAKE_INSTALL_DIR}" -B "${CMAKE_BUILD_DIR}" .
+          NumPy_INCLUDE_DIR=$(python3 -c "import numpy; print(numpy.get_include())")
+          cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_BUILD_PREFIX="${CMAKE_INSTALL_DIR}" -DNUMPY_INCLUDE_DIR=$NumPy_INCLUDE_DIR -B "${CMAKE_BUILD_DIR}" .
           cmake --build "${CMAKE_BUILD_DIR}" --parallel "$(nproc)"
           cmake --install "${CMAKE_BUILD_DIR}"
           
