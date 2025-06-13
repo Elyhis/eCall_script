@@ -154,7 +154,7 @@ void MainWindow::on_start_clicked()
     }
     if(ui->dynamic224->isChecked()){
         try{
-            scenario.eCallDynamics224(filePath, HOST, TARGET_TYPE, DEVICE_IP, duration);            
+            scenario.eCallDynamics224(filePath, HOST, TARGET_TYPE, DEVICE_IP, duration, report);            
         }catch (CommandException& e)
         {
         std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;

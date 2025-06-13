@@ -24,7 +24,7 @@ class Scenario{
         void eCallStaticGal(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, std::fstream& report);
         void eCallStaticGps(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, std::fstream& report);
         void eCallDynamics223(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, std::fstream& report);
-        void eCallDynamics224(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration);
+        void eCallDynamics224(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, std::fstream& report);
         void eCallTTFF2253(const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, SerialPort& receiver, int& nbIteration);
         void eCallTTFF2258(const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, SerialPort& receiver, int& nbIteration);
         void eCallReAcq226(const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, SerialPort& receiver, int& nbIteration);
