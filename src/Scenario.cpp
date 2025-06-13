@@ -149,6 +149,7 @@ void Scenario::eCallStatic(std::filesystem::path filePath, const std::string& HO
         report << "<div style=\"background-color: rgb(255, 60, 60);\">" << logTime() <<" Test Failed</div>" ;
     }
     if(is221Checked){
+        // TODO: Implement eCall221
         // bool isField6OK = isField6Correct(nmea.gga);
     }
 }
@@ -756,7 +757,7 @@ bool isHorizontalErrorLessThan15(std::vector<double> horizontalPos){
     return isLessThan15Meters;
 }
 //2.2.1 test to check if there is a message with value 2 at 6th position
-bool isField6Correct(std::vector<std::vector<std::string>> ggaMessage){
+bool isField6CorrectForECall221(std::vector<std::vector<std::string>> ggaMessage){
     int i = 0;
     while(i < ggaMessage.size() && ggaMessage[i][6] != "2"){
         i++;
