@@ -5,13 +5,14 @@
 #include <QTextStream>
 #include <QSerialPortInfo>
 #include <QMessageBox>
-#include <QDebug>
 #include <QFileDialog>
 
-#include <iostream>
+
 #include <tuple>
-#include <fstream>
 #include <vector>
+#include <filesystem>
+#include <iostream>
+#include <fstream>
 
 #include "lla.h"
 #include "command_exception.h"
@@ -24,7 +25,6 @@
 
 
 using namespace Sdx;
-
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -55,20 +55,43 @@ void MainWindow::on_start_clicked()
     Scenario scenario;
 
     // If you wish to connect to the simulator running on a remote computer,
-    // change "localhost" for the remote computer's IP address, such as "192.168.1.100"
+    // change "localhost" for the remote computer's IP address, such as "192.168.1.100"s
     const std::string HOST = "localhost";
 
     //Device type parameters
     const std::string TARGET_TYPE = "None"; // Change to "DTA-2116" to execute on a DTA-2116 device
     const std::string DEVICE_IP = "";           // Change to "192.168.XXX.XXX" to execute on a TARGET_TYPE device
-    int duration = 3600; // Time in seconde
+    int duration = 60; // Time in seconde
 
     setupReceiver();
-
+    
     //Path to nmea output data
     std::filesystem::path filePath = ui->path->text().toStdString();
     filePath = filePath / "eCall";
-    //filePath = "C:/Users/Bryan.Barbe/Downloads/250514_090632_2.2.2_gps_gal_sbas_rcv.nmea";
+
+    //FIXME: Test purpose
+    filePath = "C:/Users/Bryan.Barbe/Downloads/250514_090632_2.2.2_gps_gal_sbas_rcv.nmea";
+
+    auto now = std::chrono::system_clock::now();
+    // Convert to local time
+    auto localTime = std::chrono::system_clock::to_time_t(now);
+    // Format the timestamp as a string
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&localTime), "%F_%H-%M-%S");
+
+    std::filesystem::path reportPath = "report_" + ss.str() + ".html";
+
+    ss.str("");
+
+    ss << std::put_time(std::localtime(&localTime), "%d/%m/%Y %T");
+    std::fstream report;
+    report.open(reportPath, 'w');
+    report << "<body bgcolor=\"white\">";
+    report << "<font face=\"Microsoft Sans Serif\" size=\"2\">";
+    
+    report << "<h4>eCall testing</h4>";
+    report << "<div>Tests started " + ss.str() + "</div>";
+    report << "<hr>";
 
 
     // std::cout << "==> Connecting to the receiver" << std::endl;
@@ -78,7 +101,7 @@ void MainWindow::on_start_clicked()
     if(ui->staticGPS_Gal_SBAB->isChecked()){
         try{
             //graph(nmea, horizontalPos);
-            scenario.eCallStatic(filePath, HOST, TARGET_TYPE, DEVICE_IP, duration, true);
+            scenario.eCallStatic(filePath, HOST, TARGET_TYPE, DEVICE_IP, duration, true, report);
             
         }catch (CommandException& e)
         {
@@ -88,6 +111,7 @@ void MainWindow::on_start_clicked()
         {
             std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
         }
+        report << "<hr>";
     }
     if(ui->staticGal->isChecked()){
         try{
@@ -100,6 +124,7 @@ void MainWindow::on_start_clicked()
         {
             std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
         }
+        report << "<hr>";
     }
     if(ui->staticGPS->isChecked()){
         try{
@@ -112,6 +137,7 @@ void MainWindow::on_start_clicked()
         {
             std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
         }
+        report << "<hr>";
     }
     if(ui->dynamic223->isChecked()){
         try{
@@ -124,6 +150,7 @@ void MainWindow::on_start_clicked()
         {
             std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
         }
+        report << "<hr>";
     }
     if(ui->dynamic224->isChecked()){
         try{
@@ -136,10 +163,23 @@ void MainWindow::on_start_clicked()
         {
             std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
         }
+        report << "<hr>";
     }
     if(ui->ttff2253->isChecked()){
         try{
             scenario.eCallTTFF2253(HOST, TARGET_TYPE, DEVICE_IP, serialPort, nbIteration);
+        }catch (CommandException& e)
+        {
+        std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
+        }
+        catch (std::runtime_error& e)
+        {
+            std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
+        }
+    }
+    if(ui->ttff2258->isChecked()){
+        try{
+            scenario.eCallTTFF2258(HOST, TARGET_TYPE, DEVICE_IP, serialPort, nbIteration);
         }catch (CommandException& e)
         {
         std::cout << "Simulator Command Exception caught:\n" << e.what() << std::endl;
@@ -161,6 +201,11 @@ void MainWindow::on_start_clicked()
             std::cout << "Runtime Error Exception caught:\n" << e.what() << std::endl;
         }
     }
+
+    report << "</font>";
+    report << "</body>";
+    report.close();
+
 }
 
 void MainWindow::on_btnConnectReceiver_clicked()
