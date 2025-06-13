@@ -70,7 +70,7 @@ void MainWindow::on_start_clicked()
     filePath = filePath / "eCall";
 
     //FIXME: Test purpose
-    filePath = "C:/Users/Bryan.Barbe/Downloads/250514_090632_2.2.2_gps_gal_sbas_rcv.nmea";
+    //filePath = "C:/Users/Bryan.Barbe/Downloads/250514_090632_2.2.2_gps_gal_sbas_rcv.nmea";
 
     auto now = std::chrono::system_clock::now();
     // Convert to local time
