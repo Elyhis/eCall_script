@@ -85,7 +85,7 @@ void MainWindow::on_start_clicked()
 
     ss << std::put_time(std::localtime(&localTime), "%d/%m/%Y %T");
     std::fstream report;
-    report.open(reportPath, 'w');
+    report.open(reportPath, std::ios::out);
     report << "<body bgcolor=\"white\">";
     report << "<font face=\"Microsoft Sans Serif\" size=\"2\">";
     
