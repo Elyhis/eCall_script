@@ -209,19 +209,36 @@ void Scenario::eCallStaticGps(std::filesystem::path filePath, const std::string&
         report << "<div style=\"background-color: rgb(255, 60, 60);\">" << logTime() <<" Test Failed</div>" ;
     }
 }
-void Scenario::eCallDynamics223(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration){
+void Scenario::eCallDynamics223(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, std::fstream& report){
     std::vector<std::string> nmeaData;
     nmea nmea;
 
+    
+    report << "<div>" << logTime() <<" Dynamics (2.2.3)</div>";
+    report << "<div>" << logTime() <<" Cold starting receiver</div>";
+    //TODO: COLD START TO DO
+    report << "<div>" << logTime() <<" Receiver cold start complete</div>";
+    report << "<div>" << logTime() <<" Starting eCallDynamics223</div>";
+    report << "<div>" << logTime() <<" Scenario started</div>";
+
     eCallDynamics223Scenario(HOST, TARGET_TYPE, DEVICE_IP, duration);
+
+    report << "<div>" << logTime() <<" Scenario ended</div>";
+    report << "<div>" << logTime() <<" Analyzing NMEA</div>";
+    
     nmeaData = reader(filePath);
     nmea = parser(nmeaData);
-    // auto pdops = pdopGetter(nmea);
-    // bool isPDOPOk = pdopAnalyzer(pdops);
     auto [horizontalPos, mean] = computeHorizontalErrorStats(nmea, fixedPosLla);
 
-    // auto isHorizontalOK = isHorizontalErrorLessThan15(calculhorizontalPos);
-    std::cout << "Mean value: " << mean << std::endl;
+    report << "<div>" << logTime() <<" NMEA analyzed</div>";
+    graph(nmea, horizontalPos, "eCallDynamics223");
+    report << "<img src=\"graph_eCallDynamics223.png\">" ;
+    report << "<div>" << logTime() << " Horizontal position error:" << mean << "m. Expected <= 15.00 m</div>";
+    if(mean <= 15.0){
+        report << "<div style=\"background-color: rgb(52, 178, 51);\">" << logTime() <<" Test Passed</div>";
+    }else{
+        report << "<div style=\"background-color: rgb(255, 60, 60);\">" << logTime() <<" Test Failed</div>" ;
+    }
 }
 void Scenario::eCallDynamics224(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration){
     std::vector<std::string> nmeaData;
