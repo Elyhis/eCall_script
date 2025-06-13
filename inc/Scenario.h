@@ -22,7 +22,7 @@ class Scenario{
         Scenario();
         void eCallStatic(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, bool is221Checked, std::fstream &report);
         void eCallStaticGal(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, std::fstream& report);
-        void eCallStaticGps(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration);
+        void eCallStaticGps(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration, std::fstream& report);
         void eCallDynamics223(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration);
         void eCallDynamics224(std::filesystem::path filePath, const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, int& duration);
         void eCallTTFF2253(const std::string& HOST, const std::string& TARGET_TYPE, const std::string& DEVICE_IP, SerialPort& receiver, int& nbIteration);
